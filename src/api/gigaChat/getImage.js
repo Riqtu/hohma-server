@@ -1,4 +1,4 @@
-import { axiosInstance } from "../../server.js";
+import { axiosInstance } from "../../server";
 
 export const getImage = async (token, imgId) => {
   let config = {

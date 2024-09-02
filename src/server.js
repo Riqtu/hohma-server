@@ -1,17 +1,18 @@
 import path, { dirname } from "path";
 import express from "express";
 import https from "https";
-import { Text2ImageAPI } from "./api/kadn.mjs";
 import fs from "fs";
 import { fileURLToPath } from "url";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { getToken } from "./api/gigaChat/token.mjs";
-import { getModels } from "./api/gigaChat/models.mjs";
+import { getToken } from "./api/gigaChat/token";
+import { getModels } from "./api/gigaChat/models";
 import axios from "axios";
-import { genQuery } from "./api/gigaChat/genQuery.mjs";
-import { getImage } from "./api/gigaChat/getImage.mjs";
+import { genQuery } from "./api/gigaChat/genQuery";
+import { getImage } from "./api/gigaChat/getImage";
 import dotenv from "dotenv";
+import { Text2ImageAPI } from "./api/kadn";
+
 dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
@@ -34,14 +35,21 @@ let items = [
 ];
 
 let token = "";
-if (token.expires_at) {
-  setInterval(async () => {
-    token = await getToken();
-  }, token.expires_at);
-} else {
-  token = await getToken();
+async function main() {
+  try {
+    if (token.expires_at) {
+      setInterval(async () => {
+        token = await getToken();
+      }, token.expires_at);
+    } else {
+      token = await getToken();
+    }
+  } catch (error) {
+    console.error("Error fetching token:", error);
+  }
 }
 
+main();
 app.get("/test", async (req, res) => {
   const imgId = await genQuery(token.access_token);
   const img = await getImage(token.access_token, imgId);
@@ -65,57 +73,51 @@ app.get("/api/items", (req, res) => {
 
 // Генерация изображения
 app.get("/api/generate", async (req, res) => {
-  const api = new Text2ImageAPI(
-    "https://api-key.fusionbrain.ai/",
-    "36F9058A8673CB14C4839921D7821059",
-    "F85841901FEBF0BB09908690B1BCFF50"
-  );
-  const modelId = await api.getModels();
-  const uuid = await api.generate(
-    "Девушка, темно-красные волосы, серые глаза",
-    modelId,
-    1,
-    512,
-    512,
-    4
-  );
-  const images = await api.checkGeneration(uuid);
+  const api =
+    new Text2ImageAPI() /
+    api(
+      "https://api-key.fusionbrain.ai/",
+      "36F9058A8673CB14C4839921D7821059",
+      "F85841901FEBF0BB09908690B1BCFF50"
+    );
+  const modelId = (await src) / api.getModels();
+  const uuid =
+    (await src) /
+    api.generate(
+      "Девушка, темно-красные волосы, серые глаза",
+      modelId,
+      1,
+      512,
+      512,
+      4
+    );
+  const images = (await src) / api.checkGeneration(uuid);
   res.json({ data: images });
 });
 
 app.post("/api/generate", async (req, res) => {
   const data = req.body; // Получаем данные из тела запроса
-  const api = new Text2ImageAPI(
-    "https://api-key.fusionbrain.ai/",
-    "36F9058A8673CB14C4839921D7821059",
-    "F85841901FEBF0BB09908690B1BCFF50"
-  );
-  const modelId = await api.getModels();
-  const uuid = await api.generate(
-    data.query,
-    modelId,
-    1,
-    data.width,
-    data.height,
-    data.style
-  );
-  const images = await api.checkGeneration(uuid);
+  const api =
+    new Text2ImageAPI() /
+    api(
+      "https://api-key.fusionbrain.ai/",
+      "36F9058A8673CB14C4839921D7821059",
+      "F85841901FEBF0BB09908690B1BCFF50"
+    );
+  const modelId = (await src) / api.getModels();
+  const uuid =
+    (await src) /
+    api.generate(data.query, modelId, 1, data.width, data.height, data.style);
+  const images = (await src) / api.checkGeneration(uuid);
   res.json({ data: images });
   console.log("Полученные данные:", data); // Выводим данные в консоль
 });
-// Получение пути к текущему файлу и каталогу
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
-// // Чтение файла с ключом
-// const keyPath = path.join(__dirname, 'server.key');
-// const key = fs.readFileSync(keyPath);
-// Настройка HTTPS
+// Определите `options` для HTTPS
 const options = {
-  key: fs.readFileSync(path.join(__dirname, "server.key")),
-  cert: fs.readFileSync(path.join(__dirname, "server.cert")),
+  key: fs.readFileSync(path.resolve("server.key")), // Путь к вашему приватному ключу
+  cert: fs.readFileSync(path.resolve("server.cert")), // Путь к вашему сертификату
 };
-
 // Запускаем HTTPS сервер
 https.createServer(options, app).listen(port, () => {
   console.log(`Secure server is running at https://localhost:${port}`);

@@ -1,4 +1,4 @@
-import { axiosInstance } from "../../server.js";
+import { axiosInstance } from "../../server";
 
 export const genQuery = async (token, state, data) => {
   let config = {

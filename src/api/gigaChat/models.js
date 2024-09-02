@@ -1,5 +1,5 @@
 import axios from "axios";
-import { axiosInstance } from "../../server.js";
+import { axiosInstance } from "../../server";
 
 export const getModels = async (token) => {
   let config = {
