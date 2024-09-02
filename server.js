@@ -11,8 +11,10 @@ import { getModels } from "./api/gigaChat/models.mjs";
 import axios from "axios";
 import { genQuery } from "./api/gigaChat/genQuery.mjs";
 import { getImage } from "./api/gigaChat/getImage.mjs";
+import dotenv from "dotenv";
+dotenv.config();
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 export const axiosInstance = axios.create({
   httpsAgent: new https.Agent({
