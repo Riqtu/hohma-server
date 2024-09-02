@@ -46,7 +46,6 @@ export const genQuery = async (token, state, data) => {
   let result = "";
   await axiosInstance(config)
     .then((response) => {
-      console.log(JSON.stringify(response.data));
       if (state === "image") {
         const str = response.data.choices[0].message.content;
         const match = str.match(/src="([^"]*)"/);

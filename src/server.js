@@ -1,12 +1,8 @@
-import path, { dirname } from "path";
 import express from "express";
 import https from "https";
-import fs from "fs";
-import { fileURLToPath } from "url";
 import cors from "cors";
 import bodyParser from "body-parser";
 import { getToken } from "./api/gigaChat/token";
-import { getModels } from "./api/gigaChat/models";
 import axios from "axios";
 import { genQuery } from "./api/gigaChat/genQuery";
 import { getImage } from "./api/gigaChat/getImage";
@@ -36,36 +32,24 @@ let items = [
 ];
 
 let token = "";
-async function main() {
-  try {
-    if (token.expires_at) {
-      setInterval(async () => {
-        token = await getToken();
-      }, token.expires_at);
-    } else {
-      token = await getToken();
-    }
-  } catch (error) {
-    console.error("Error fetching token:", error);
-  }
-}
-
-main();
 
 app.get("/", (req, res) => {
   res.send("Timeweb Cloud + Express = ️ ❤️");
 });
 
 app.post("/api/create/image", async (req, res) => {
+  token = await getToken();
   const data = req.body; // Получаем данные из тела запроса
   const imgId = await genQuery(token.access_token, "image", data);
   const img = await getImage(token.access_token, imgId);
-  res.json({ data: img });
+  res.json({ image: img });
 });
 
-app.get("/api/create/text", async (req, res) => {
+app.post("/api/create/text", async (req, res) => {
+  token = await getToken();
+  const data = req.body;
   const text = await genQuery(token.access_token, "text", data);
-  res.json({ data: text });
+  res.json({ text: text });
 });
 
 app.get("/api/items", (req, res) => {
@@ -113,16 +97,6 @@ app.post("/api/generate", async (req, res) => {
   res.json({ data: images });
   console.log("Полученные данные:", data); // Выводим данные в консоль
 });
-
-// // Определите `options` для HTTPS
-// const options = {
-//   key: fs.readFileSync(path.resolve("server.key")), // Путь к вашему приватному ключу
-//   cert: fs.readFileSync(path.resolve("server.cert")), // Путь к вашему сертификату
-// };
-// // Запускаем HTTPS сервер
-// https.createServer(options, app).listen(port, () => {
-//   console.log(`Secure server is running at https://localhost:${port}`);
-// });
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
