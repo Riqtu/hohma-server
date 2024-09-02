@@ -25,6 +25,7 @@ export const axiosInstance = axios.create({
 
 // Используем middleware для парсинга JSON
 app.use(cors());
+app.options("*", cors()); // Разрешить запросы OPTIONS из любого источника
 app.use(express.json());
 app.use(bodyParser.json());
 
