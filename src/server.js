@@ -51,11 +51,11 @@ async function main() {
 }
 
 main();
-app.get("/test", async (req, res) => {
-  const imgId = await genQuery(token.access_token);
-  const img = await getImage(token.access_token, imgId);
-  res.json({ data: img });
+
+app.get("/", (req, res) => {
+  res.send("Timeweb Cloud + Express = ️ ❤️");
 });
+
 app.post("/api/create/image", async (req, res) => {
   const data = req.body; // Получаем данные из тела запроса
   const imgId = await genQuery(token.access_token, "image", data);
