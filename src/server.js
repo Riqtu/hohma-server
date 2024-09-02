@@ -114,12 +114,16 @@ app.post("/api/generate", async (req, res) => {
   console.log("Полученные данные:", data); // Выводим данные в консоль
 });
 
-// Определите `options` для HTTPS
-const options = {
-  key: fs.readFileSync(path.resolve("server.key")), // Путь к вашему приватному ключу
-  cert: fs.readFileSync(path.resolve("server.cert")), // Путь к вашему сертификату
-};
-// Запускаем HTTPS сервер
-https.createServer(options, app).listen(port, () => {
-  console.log(`Secure server is running at https://localhost:${port}`);
+// // Определите `options` для HTTPS
+// const options = {
+//   key: fs.readFileSync(path.resolve("server.key")), // Путь к вашему приватному ключу
+//   cert: fs.readFileSync(path.resolve("server.cert")), // Путь к вашему сертификату
+// };
+// // Запускаем HTTPS сервер
+// https.createServer(options, app).listen(port, () => {
+//   console.log(`Secure server is running at https://localhost:${port}`);
+// });
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`);
 });
