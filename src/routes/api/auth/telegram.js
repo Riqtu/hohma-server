@@ -3,7 +3,7 @@ import crypto from "crypto";
 const router = express.Router();
 const BOT_TOKEN = process.env.BOT_TOKEN;
 
-app.get("/", (req, res) => {
+router.get("/", (req, res) => {
   const { hash, ...data } = req.query;
   const secret = crypto.createHash("sha256").update(BOT_TOKEN).digest();
   const checkString = Object.keys(data)
