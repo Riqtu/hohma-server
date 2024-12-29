@@ -1,7 +1,7 @@
 import express from "express";
 import crypto from "crypto";
 const router = express.Router();
-const BOT_TOKEN = "7708867557:AAGFcnAscBeyXeeI_vs_cUHLHPPautBL57Y";
+const BOT_TOKEN = process.env.BOT_TOKEN;
 
 const checkTelegramAuth = (data) => {
   const { hash, ...rest } = data;
@@ -21,7 +21,7 @@ const checkTelegramAuth = (data) => {
   return hash === checkHash;
 };
 
-router.post("/", (req, res) => {
+router.get("/", (req, res) => {
   console.log("Request received at /auth/telegram:", req.body);
   const data = req.body;
 
@@ -32,7 +32,9 @@ router.post("/", (req, res) => {
   const user = {
     id: data.id,
     first_name: data.first_name,
+    last_name: data.last_name,
     username: data.username,
+    photo_url: data.photo_url,
   };
 
   res.send(`
@@ -44,27 +46,5 @@ router.post("/", (req, res) => {
     </script>
   `);
 });
-router.post("/", (req, res) => {
-  console.log(req.body);
-  const data = req.body;
 
-  if (!checkTelegramAuth(data)) {
-    return res.status(403).json({ message: "Invalid Telegram data" });
-  }
-
-  const user = {
-    id: data.id,
-    first_name: data.first_name,
-    username: data.username,
-  };
-
-  res.send(`
-    <script>
-      window.opener.postMessage(${JSON.stringify(user)}, '${
-    req.headers.origin
-  }');
-      window.close();
-    </script>
-  `);
-});
 export default router;
