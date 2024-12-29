@@ -1,5 +1,5 @@
 import express from "express";
-
+import crypto from "crypto";
 const router = express.Router();
 const BOT_TOKEN = "7708867557:AAGFcnAscBeyXeeI_vs_cUHLHPPautBL57Y";
 
@@ -20,6 +20,7 @@ const checkTelegramAuth = (data) => {
 };
 
 router.post("/", (req, res) => {
+  console.log("Request received at /auth/telegram:", req.body);
   const data = req.body;
 
   if (!checkTelegramAuth(data)) {
