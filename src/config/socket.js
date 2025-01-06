@@ -18,37 +18,20 @@ const setupSocket = (server) => {
       io.emit("message", data);
     });
 
-    // Голосовой чат: обработка сигналов WebRTC
-    socket.on("join-room", (roomId) => {
-      if (!roomId) {
-        console.error("Room ID не указан");
-        return;
-      }
+    socket.on("offer", (offer) => {
+      socket.broadcast.emit("offer", offer);
+    });
 
-      socket.join(roomId);
-      console.log(`Клиент ${socket.id} присоединился к комнате ${roomId}`);
-      socket.to(roomId).emit("user-connected", socket.id);
+    socket.on("answer", (answer) => {
+      socket.broadcast.emit("answer", answer);
+    });
 
-      // Обработка WebRTC сигналов
-      socket.on("offer", (offer, to) => {
-        console.log(`Offer от ${socket.id} для ${to}`);
-        io.to(to).emit("offer", offer, socket.id);
-      });
+    socket.on("ice-candidate", (candidate) => {
+      socket.broadcast.emit("ice-candidate", candidate);
+    });
 
-      socket.on("answer", (answer, to) => {
-        console.log(`Answer от ${socket.id} для ${to}`);
-        io.to(to).emit("answer", answer, socket.id);
-      });
-
-      socket.on("candidate", (candidate, to) => {
-        console.log(`Candidate от ${socket.id} для ${to}`);
-        io.to(to).emit("candidate", candidate);
-      });
-
-      socket.on("disconnect", () => {
-        console.log(`Клиент ${socket.id} отключился от комнаты ${roomId}`);
-        socket.to(roomId).emit("user-disconnected", socket.id);
-      });
+    socket.on("disconnect", () => {
+      console.log("Клиент отключен:", socket.id);
     });
   });
 
