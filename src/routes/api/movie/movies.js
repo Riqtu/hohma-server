@@ -1,5 +1,6 @@
 import express from "express";
 import Movie from "./../../../models/Movie.js";
+import axios from "axios";
 
 const router = express.Router();
 
@@ -64,9 +65,23 @@ router.post("/", async (req, res) => {
   try {
     const movie = new Movie(req.body);
     await movie.save();
-    res.status(201).json(movie);
+    res.status(201).json(movie); // Отправляем первый ответ клиенту
+
+    try {
+      await axios.post(
+        `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`,
+        {
+          chat_id: process.env.CHAT_ID,
+          text: `Пользователь ${req.body.author} добавил фильм - ${req.body.title}`, // Преобразуем объект в строку
+        }
+      );
+      console.log("Сообщение отправлено!");
+    } catch (error) {
+      console.error("Ошибка отправки сообщения в Telegram:", error.message);
+      // Здесь НЕ отправляем res.status() или res.send(), так как ответ уже отправлен
+    }
   } catch (error) {
-    res.status(400).json({ error: error.message });
+    res.status(400).json({ error: error.message }); // Ответ при ошибке валидации
   }
 });
 
