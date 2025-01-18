@@ -24,19 +24,29 @@ const mongoURI = process.env.MONGO_URI;
 connectDB(mongoURI);
 
 // Создаем HTTPS сервер
-// const server = https.createServer(options, app);
+const httpsServer = https.createServer(options, app);
 
 // Создаем HTTP сервер
-const server = http.createServer(app);
-
-// Настройка Socket.IO
-setupSocket(server);
+const httpServer = http.createServer(app);
 
 // Настройка Swagger
 setupSwagger(app);
 
 // Запуск сервера
-server.listen(port, () => {
-  console.log(`Сервер запущен на https://localhost:${port}`);
-  console.log(`Swagger docs available at https://localhost:${port}/api-docs`);
-});
+if (process.env.MODE === "DEV") {
+  // Настройка Socket.IO
+  setupSocket(httpsServer);
+  httpsServer.listen(port, () => {
+    console.log(`Сервер запущен на https://localhost:${port}`);
+    console.log(`Swagger docs available at https://localhost:${port}/api-docs`);
+  });
+}
+
+if (process.env.MODE === "PRODUCTION") {
+  // Настройка Socket.IO
+  setupSocket(httpServer);
+  httpServer.listen(port, () => {
+    console.log(`Сервер запущен на http://localhost:${port}`);
+    console.log(`Swagger docs available at http://localhost:${port}/api-docs`);
+  });
+}

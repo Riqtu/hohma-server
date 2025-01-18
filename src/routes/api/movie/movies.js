@@ -72,7 +72,7 @@ router.post("/", async (req, res) => {
         `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`,
         {
           chat_id: process.env.CHAT_ID,
-          text: `Пользователь ${req.body.author} добавил фильм - ${req.body.title}`, // Преобразуем объект в строку
+          text: `Пользователь ${req.body.author} добавил фильм - "${req.body.title}"`, // Преобразуем объект в строку
         }
       );
       console.log("Сообщение отправлено!");
@@ -213,9 +213,23 @@ router.put("/:id", async (req, res) => {
  */
 router.delete("/:id", async (req, res) => {
   try {
+    const findMovie = await Movie.findById(req.params.id);
     const movie = await Movie.findByIdAndDelete(req.params.id);
     if (!movie) return res.status(404).json({ error: "Movie not found" });
     res.json({ message: "Movie deleted" });
+    try {
+      await axios.post(
+        `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`,
+        {
+          chat_id: process.env.CHAT_ID,
+          text: `Фильм "${findMovie.title}" выбывает =(`, // Преобразуем объект в строку
+        }
+      );
+      console.log("Сообщение отправлено!");
+    } catch (error) {
+      console.error("Ошибка отправки сообщения в Telegram:", error.message);
+      // Здесь НЕ отправляем res.status() или res.send(), так как ответ уже отправлен
+    }
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
