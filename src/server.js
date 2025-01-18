@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import https from "https";
+import http from "http";
 import app from "./app.js";
 import connectDB from "./config/db.js";
 import setupSocket from "./config/socket.js";
@@ -22,8 +23,11 @@ const mongoURI = process.env.MONGO_URI;
 // Подключение к базе данных
 connectDB(mongoURI);
 
+// Создаем HTTPS сервер
+// const server = https.createServer(options, app);
+
 // Создаем HTTP сервер
-const server = https.createServer(options, app);
+const server = http.createServer(app);
 
 // Настройка Socket.IO
 setupSocket(server);
