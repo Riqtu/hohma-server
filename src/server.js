@@ -5,6 +5,9 @@ import app from "./app.js";
 import connectDB from "./config/db.js";
 import setupSocket from "./config/socket.js";
 import setupSwagger from "./config/swagger.js";
+import telegramService from "./services/telegramService.js"; // Импортируем сервис
+import schedule from "node-schedule";
+import axios from "axios";
 
 dotenv.config();
 // Получение ключей из переменных окружения
@@ -31,6 +34,36 @@ const httpServer = http.createServer(app);
 
 // Настройка Swagger
 setupSwagger(app);
+
+schedule.scheduleJob("* 8 * * *", async () => {
+  console.log("Запущена задача отправки аффирмации.");
+  const affirmation = await axios.get(
+    "http://localhost:3000/api/affirmations/random"
+  );
+  if (affirmation.data) {
+    const escapeMarkdownV2 = (text) =>
+      text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&");
+
+    const affirmationText = escapeMarkdownV2(
+      affirmation?.data?.text || "Не удалось получить аффирмацию"
+    );
+
+    await telegramService.sendMessage(
+      process.env.CHAT_ID,
+      `
+*🌟 Ежедневная ХОХМфирмация 🌟*
+
+> ${affirmationText}
+
+
+_Удачного вам дня_
+      `,
+      "MarkdownV2"
+    );
+  } else {
+    console.error("Не удалось получить аффирмацию.");
+  }
+});
 
 // Запуск сервера
 if (process.env.MODE === "DEV") {
