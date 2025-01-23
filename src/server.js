@@ -35,7 +35,7 @@ const httpServer = http.createServer(app);
 // Настройка Swagger
 setupSwagger(app);
 
-schedule.scheduleJob("10 8 * * *", async () => {
+schedule.scheduleJob("0 5 * * *", async () => {
   console.log("Запущена задача отправки аффирмации.");
   const affirmation = await axios.get(
     "https://hohma-server.ru/api/affirmations/random"
