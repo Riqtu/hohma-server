@@ -35,7 +35,7 @@ const httpServer = http.createServer(app);
 // Настройка Swagger
 setupSwagger(app);
 
-schedule.scheduleJob("* 8 * * *", async () => {
+schedule.scheduleJob("0 8 * * *", async () => {
   console.log("Запущена задача отправки аффирмации.");
   const affirmation = await axios.get(
     "http://localhost:3000/api/affirmations/random"
