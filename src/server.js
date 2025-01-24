@@ -9,6 +9,7 @@ import telegramService from "./services/telegramService.js"; // Импортир
 import schedule from "node-schedule";
 import axios from "axios";
 import { Telegraf } from "telegraf";
+import { message } from "telegraf/filters";
 
 dotenv.config();
 // Получение ключей из переменных окружения
@@ -68,20 +69,32 @@ _Удачного вам дня_
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
+// Регистрация команд для отображения в подсказках
+bot.telegram.setMyCommands([
+  {
+    command: "random",
+    description: "Получить случайный ответ (Да или Нет)",
+  },
+]);
 // Обработчик команды /random
 bot.command("random", (ctx) => {
   const answer = Math.random() > 0.5 ? "Да" : "Нет";
   ctx.reply(answer);
 });
 
-// Обработчик упоминания бота
-bot.on("text", (ctx) => {
-  const message = ctx.message;
+bot.on(message("text"), (ctx) => {
+  const msg = ctx.message;
 
   // Проверяем, был ли упомянут бот
-  if (message.text.includes(bot.botInfo.username)) {
-    const answer = Math.random() > 0.5 ? "Да" : "Нет";
-    ctx.reply(answer);
+  if (msg.text.includes(ctx.botInfo.username)) {
+    // Убедимся, что сообщение содержит определённое ключевое слово
+    const command = msg.text.replace(`@${ctx.botInfo.username}`, "").trim();
+    if (command === "/random") {
+      const answer = Math.random() > 0.5 ? "Да" : "Нет";
+      ctx.reply(answer);
+    } else {
+      ctx.reply("Я не знаю, что ты имеешь в виду.");
+    }
   }
 });
 
