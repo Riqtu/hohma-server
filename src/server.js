@@ -8,6 +8,7 @@ import setupSwagger from "./config/swagger.js";
 import telegramService from "./services/telegramService.js"; // Импортируем сервис
 import schedule from "node-schedule";
 import axios from "axios";
+import { Telegraf } from "telegraf";
 
 dotenv.config();
 // Получение ключей из переменных окружения
@@ -64,6 +65,35 @@ _Удачного вам дня_
     console.error("Не удалось получить аффирмацию.");
   }
 });
+
+const bot = new Telegraf(process.env.BOT_TOKEN);
+
+// Обработчик команды /random
+bot.command("random", (ctx) => {
+  const answer = Math.random() > 0.5 ? "Да" : "Нет";
+  ctx.reply(answer);
+});
+
+// Обработчик упоминания бота
+bot.on("text", (ctx) => {
+  const message = ctx.message;
+
+  // Проверяем, был ли упомянут бот
+  if (message.text.includes(bot.botInfo.username)) {
+    const answer = Math.random() > 0.5 ? "Да" : "Нет";
+    ctx.reply(answer);
+  }
+});
+
+// Запуск бота
+bot
+  .launch()
+  .then(() => console.log("Бот запущен"))
+  .catch((err) => console.error("Ошибка запуска бота:", err));
+
+// Обработка остановки
+process.once("SIGINT", () => bot.stop("SIGINT"));
+process.once("SIGTERM", () => bot.stop("SIGTERM"));
 
 // Запуск сервера
 if (process.env.MODE === "DEV") {
