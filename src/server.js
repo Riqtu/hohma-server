@@ -103,7 +103,7 @@ bot.on(message("text"), async (ctx) => {
       }
 
       const data = {
-        modelUri: `gpt://${folderId}/yandexgpt/latest`,
+        modelUri: `gpt://${folderId}/yandexgpt-lite/latest`,
         completionOptions: {
           stream: false,
           temperature: 0.6,
@@ -112,7 +112,7 @@ bot.on(message("text"), async (ctx) => {
         messages: [
           {
             role: "system",
-            text: 'Ты дружелюбный ассистент по имени "Хохма". Отвечай на вопросы и шути.',
+            text: 'Ты дружелюбная ассистентка по имени "Хохма". Отвечай на вопросы и шути.',
           },
           { role: "user", text: command },
         ],
