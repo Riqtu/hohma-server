@@ -1,0 +1,88 @@
+openapi: 3.0.0
+info:
+  title: Affirmation API
+  version: 1.0.0
+  description: API для управления аффирмациями
+
+components:
+  schemas:
+    Affirmation:
+      type: object
+      required:
+        - text
+      properties:
+        _id:
+          type: string
+          description: Уникальный идентификатор аффирмации
+        text:
+          type: string
+          description: Текст аффирмации
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата создания
+
+paths:
+  /api/affirmations:
+    post:
+      summary: Добавить новую аффирмацию
+      tags: [Affirmations]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Affirmation"
+      responses:
+        201:
+          description: Успешное создание
+        400:
+          description: Ошибка валидации
+
+    get:
+      summary: Получить список всех аффирмаций
+      tags: [Affirmations]
+      responses:
+        200:
+          description: Список аффирмаций
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Affirmation"
+        500:
+          description: Ошибка сервера
+
+  /api/affirmations/{id}:
+    delete:
+      summary: Удалить аффирмацию
+      tags: [Affirmations]
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+          description: Идентификатор аффирмации
+      responses:
+        200:
+          description: Успешное удаление
+        404:
+          description: Аффирмация не найдена
+        500:
+          description: Ошибка сервера
+
+  /api/affirmations/random:
+    get:
+      summary: Получить случайную аффирмацию
+      tags: [Affirmations]
+      responses:
+        200:
+          description: Случайная аффирмация
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Affirmation"
+        500:
+          description: Ошибка сервера

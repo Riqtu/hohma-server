@@ -1,0 +1,149 @@
+openapi: 3.0.0
+info:
+  title: Movie API
+  version: 1.0.0
+  description: API для управления фильмами
+
+tags:
+  - name: Movies
+    description: API для управления фильмами
+
+components:
+  schemas:
+    Movie:
+      type: object
+      required:
+        - title
+      properties:
+        _id:
+          type: string
+          description: Уникальный идентификатор фильма
+        title:
+          type: string
+          description: Название фильма
+        author:
+          type: string
+          description: Автор фильма
+        authorName:
+          type: string
+          description: Полное имя автора фильма
+        authorImg:
+          type: string
+          description: Ссылка на изображение автора
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата создания фильма
+        isDeleted:
+          type: boolean
+          description: Флаг удаления
+        deletedAt:
+          type: string
+          format: date-time
+          nullable: true
+          description: Дата удаления фильма
+
+paths:
+  /api/movies:
+    post:
+      summary: Создать новый фильм
+      tags: [Movies]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Movie"
+      responses:
+        201:
+          description: Фильм создан
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Movie"
+        400:
+          description: Ошибка валидации
+
+    get:
+      summary: Получить список всех фильмов
+      tags: [Movies]
+      responses:
+        200:
+          description: Список фильмов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Movie"
+        500:
+          description: Ошибка сервера
+
+  /api/movies/{id}:
+    get:
+      summary: Получить фильм по ID
+      tags: [Movies]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Уникальный идентификатор фильма
+      responses:
+        200:
+          description: Данные фильма
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Movie"
+        404:
+          description: Фильм не найден
+        500:
+          description: Ошибка сервера
+
+    put:
+      summary: Обновить данные фильма
+      tags: [Movies]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Уникальный идентификатор фильма
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Movie"
+      responses:
+        200:
+          description: Фильм обновлен
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Movie"
+        404:
+          description: Фильм не найден
+        400:
+          description: Ошибка валидации
+
+    delete:
+      summary: Удалить фильм
+      tags: [Movies]
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Уникальный идентификатор фильма
+      responses:
+        200:
+          description: Фильм удален
+        404:
+          description: Фильм не найден
+        500:
+          description: Ошибка сервера

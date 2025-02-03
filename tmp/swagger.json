@@ -1,0 +1,432 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API Documentation",
+    "version": "1.0.0",
+    "description": "API для работы с разными сущностями"
+  },
+  "paths": {
+    "/api/movies": {
+      "post": {
+        "summary": "Создать новый фильм",
+        "tags": [
+          "Movies"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Movie"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Фильм создан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка валидации"
+          }
+        }
+      },
+      "get": {
+        "summary": "Получить список всех фильмов",
+        "tags": [
+          "Movies"
+        ],
+        "responses": {
+          "200": {
+            "description": "Список фильмов",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Movie"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      }
+    },
+    "/api/movies/{id}": {
+      "get": {
+        "summary": "Получить фильм по ID",
+        "tags": [
+          "Movies"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Уникальный идентификатор фильма"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Данные фильма",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Фильм не найден"
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      },
+      "put": {
+        "summary": "Обновить данные фильма",
+        "tags": [
+          "Movies"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Уникальный идентификатор фильма"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Movie"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Фильм обновлен",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Movie"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка валидации"
+          },
+          "404": {
+            "description": "Фильм не найден"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Удалить фильм",
+        "tags": [
+          "Movies"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "schema": {
+              "type": "string"
+            },
+            "required": true,
+            "description": "Уникальный идентификатор фильма"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Фильм удален"
+          },
+          "404": {
+            "description": "Фильм не найден"
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      }
+    },
+    "/api/affirmations": {
+      "post": {
+        "summary": "Добавить новую аффирмацию",
+        "tags": [
+          "Affirmations"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Affirmation"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Успешное создание"
+          },
+          "400": {
+            "description": "Ошибка валидации"
+          }
+        }
+      },
+      "get": {
+        "summary": "Получить список всех аффирмаций",
+        "tags": [
+          "Affirmations"
+        ],
+        "responses": {
+          "200": {
+            "description": "Список аффирмаций",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Affirmation"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      }
+    },
+    "/api/affirmations/{id}": {
+      "delete": {
+        "summary": "Удалить аффирмацию",
+        "tags": [
+          "Affirmations"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Идентификатор аффирмации"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешное удаление"
+          },
+          "404": {
+            "description": "Аффирмация не найдена"
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      }
+    },
+    "/api/affirmations/random": {
+      "get": {
+        "summary": "Получить случайную аффирмацию",
+        "tags": [
+          "Affirmations"
+        ],
+        "responses": {
+          "200": {
+            "description": "Случайная аффирмация",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Affirmation"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      }
+    },
+    "/api/final-results": {
+      "get": {
+        "summary": "Получить все финальные результаты",
+        "operationId": "getAllFinalResults",
+        "tags": [
+          "FinalResults"
+        ],
+        "responses": {
+          "200": {
+            "description": "Успешный запрос",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/FinalResults"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Добавить финальный результат",
+        "operationId": "addFinalResults",
+        "tags": [
+          "FinalResults"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FinalResults"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Финальный результат успешно добавлен"
+          },
+          "400": {
+            "description": "Ошибка в данных запроса"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Movie": {
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Уникальный идентификатор фильма"
+          },
+          "title": {
+            "type": "string",
+            "description": "Название фильма"
+          },
+          "author": {
+            "type": "string",
+            "description": "Автор фильма"
+          },
+          "authorName": {
+            "type": "string",
+            "description": "Полное имя автора фильма"
+          },
+          "authorImg": {
+            "type": "string",
+            "description": "Ссылка на изображение автора"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Дата создания фильма"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "description": "Флаг удаления"
+          },
+          "deletedAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true,
+            "description": "Дата удаления фильма"
+          }
+        }
+      },
+      "Affirmation": {
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Уникальный идентификатор аффирмации"
+          },
+          "text": {
+            "type": "string",
+            "description": "Текст аффирмации"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Дата создания"
+          }
+        }
+      },
+      "FinalResults": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Уникальный идентификатор результата",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "firstPlace": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID фильма, занявшего первое место",
+            "example": "60d21b4667d0d8992e610c85"
+          },
+          "secondPlace": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID фильма, занявшего второе место",
+            "example": "60d21b4667d0d8992e610c86"
+          },
+          "thirdPlace": {
+            "type": "string",
+            "format": "uuid",
+            "description": "ID фильма, занявшего третье место",
+            "example": "60d21b4667d0d8992e610c87"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Дата создания результата",
+            "example": "2024-02-02T12:00:00Z"
+          }
+        }
+      }
+    }
+  }
+}
