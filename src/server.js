@@ -10,6 +10,8 @@ import schedule from "node-schedule";
 import axios from "axios";
 import { Telegraf } from "telegraf";
 import { message } from "telegraf/filters";
+import fs from "fs";
+import path from "path";
 
 dotenv.config();
 // Получение ключей из переменных окружения
@@ -75,6 +77,10 @@ bot.telegram.setMyCommands([
     command: "random",
     description: "Получить случайный ответ (Да или Нет)",
   },
+  {
+    command: "draw",
+    description: "Нарисовать картинку по описанию",
+  },
 ]);
 // Обработчик команды /random
 bot.command("random", (ctx) => {
@@ -82,6 +88,140 @@ bot.command("random", (ctx) => {
   ctx.reply(answer);
 });
 
+bot.command("draw", async (ctx) => {
+  try {
+    const prompt = ctx.message.text.replace("/draw", "").trim();
+
+    if (!prompt) {
+      ctx.reply("⚠️ Укажите описание изображения после команды /draw.");
+      return;
+    }
+
+    const apiKey = process.env.GPT_API_KEY;
+    const folderId = process.env.FOLDER_ID;
+
+    if (!apiKey || !folderId) {
+      console.error("Ошибка: отсутствует API-ключ или Folder ID");
+      ctx.reply("Ошибка конфигурации: отсутствует API-ключ.");
+      return;
+    }
+
+    const data = {
+      modelUri: `art://${folderId}/yandex-art/latest`,
+      generationOptions: {
+        width: 1024,
+        height: 1024,
+      },
+      messages: [
+        {
+          weight: "1",
+          text: prompt,
+        },
+      ],
+    };
+
+    ctx.reply("🎨 Генерация изображения... Пожалуйста, подождите.");
+
+    const response = await axios.post(
+      "https://llm.api.cloud.yandex.net/foundationModels/v1/imageGenerationAsync",
+      data,
+      {
+        headers: {
+          Authorization: `Api-Key ${apiKey}`,
+          "x-folder-id": folderId,
+        },
+      }
+    );
+
+    const requestId = response.data.id;
+    console.log("Запрос отправлен. ID генерации:", requestId);
+
+    if (!requestId) {
+      throw new Error("Ошибка API: не получен ID генерации.");
+    }
+
+    // Ожидание завершения генерации
+    let imageData = null;
+    for (let attempt = 0; attempt < 10; attempt++) {
+      await new Promise((resolve) => setTimeout(resolve, 5000)); // Ждём 5 секунд
+
+      console.log(
+        `🔄 Проверка статуса генерации (попытка ${attempt + 1}/10)...`
+      );
+      const statusResponse = await axios.get(
+        `https://llm.api.cloud.yandex.net:443/operations/${requestId}`,
+        {
+          headers: {
+            Authorization: `Api-Key ${apiKey}`,
+            "x-folder-id": folderId,
+          },
+        }
+      );
+
+      console.log("Ответ API на статус генерации:", statusResponse.data);
+
+      if (statusResponse.data.done) {
+        if (
+          statusResponse.data.response &&
+          statusResponse.data.response.image
+        ) {
+          console.log("Генерация завершена!");
+          imageData = statusResponse.data.response.image;
+        } else {
+          throw new Error("Ошибка API: результат генерации отсутствует.");
+        }
+        break;
+      }
+    }
+
+    if (!imageData) {
+      throw new Error("⏳ Время ожидания истекло. Попробуйте позже.");
+    }
+
+    // Путь к файлу
+    const filePath = path.resolve(__dirname, "../generated_image.png");
+
+    // Сохранение base64-картинки в файл
+    try {
+      const imageBuffer = Buffer.from(imageData, "base64");
+      fs.writeFileSync(filePath, imageBuffer);
+      console.log(`Изображение сохранено: ${filePath}`);
+    } catch (err) {
+      console.error("Ошибка при сохранении файла:", err);
+      ctx.reply("❌ Ошибка сохранения изображения.");
+      return;
+    }
+
+    // Проверяем существование файла перед отправкой
+    if (!fs.existsSync(filePath)) {
+      console.error("Файл не найден:", filePath);
+      ctx.reply("❌ Файл с изображением не найден.");
+      return;
+    }
+
+    // Отправляем изображение пользователю
+    await ctx.replyWithPhoto(
+      { source: filePath },
+      {
+        caption: `🖼 Сгенерированное изображение по запросу: "${prompt}"`,
+      }
+    );
+
+    // Удаляем временный файл (асинхронно)
+    fs.unlink(filePath, (err) => {
+      if (err) console.error("Ошибка при удалении файла:", err);
+      else console.log("Файл успешно удалён:", filePath);
+    });
+  } catch (error) {
+    console.error(
+      "Ошибка при генерации изображения:",
+      error.response?.data || error
+    );
+    ctx.reply(
+      "❌ Произошла ошибка при генерации изображения. Попробуйте позже."
+    );
+  }
+});
 bot.on(message("text"), async (ctx) => {
   try {
     const msg = ctx.message.text;
