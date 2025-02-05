@@ -74,6 +74,14 @@ const bot = new Telegraf(process.env.BOT_TOKEN);
 // Регистрация команд для отображения в подсказках
 bot.telegram.setMyCommands([
   {
+    command: "open",
+    description: "Открыть хохму",
+  },
+  {
+    command: "poll",
+    description: "Создать опрос на киновечер",
+  },
+  {
     command: "random",
     description: "Получить случайный ответ (Да или Нет)",
   },
@@ -88,6 +96,66 @@ bot.command("random", (ctx) => {
   ctx.reply(answer);
 });
 
+bot.command("open3", (ctx) => {
+  const webAppUrl = process.env.WEB_APP_URL;
+
+  ctx.reply("👋 Добро пожаловать в Хохму!", {
+    reply_markup: {
+      inline_keyboard: [[{ text: "🚀 Открыть Хохму", url: webAppUrl }]],
+    },
+  });
+});
+bot.on("callback_query", async (ctx) => {
+  const data = ctx.callbackQuery.data;
+
+  if (data === "random") {
+    const answer = Math.random() > 0.5 ? "Да" : "Нет";
+    await ctx.answerCbQuery(); // Закрываем всплывающее уведомление
+    await ctx.reply(`🎲 Случайный ответ: *${answer}*`, {
+      parse_mode: "Markdown",
+    });
+  }
+
+  if (data === "draw") {
+    await ctx.answerCbQuery();
+    await ctx.reply("Введите описание изображения после команды /draw.");
+  }
+});
+bot.command("poll", async (ctx) => {
+  try {
+    const question = "🎬 Киновечер! "; // Твой вопрос
+    const options = ["👍🏻 Буду", "👎🏻 Не буду", "🤔 Надо подумать"]; // Варианты ответа
+    const isAnonymous = false; // Если `false`, то ответы будут видны
+
+    // Отправляем опрос
+    const pollMessage = await ctx.telegram.sendPoll(
+      ctx.chat.id,
+      question,
+      options,
+      {
+        is_anonymous: isAnonymous,
+      }
+    );
+
+    // Добавляем кнопку с переходом в твое веб-приложение
+    const webAppUrl = process.env.WEB_APP_URL;
+    await ctx.telegram.sendMessage(ctx.chat.id, "Открыть Хохму:", {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            {
+              text: "🚀 Перейти в Хохму",
+              url: webAppUrl + "?startapp=movieWheel",
+            },
+          ],
+        ],
+      },
+    });
+  } catch (error) {
+    console.error("Ошибка при создании опроса:", error);
+    ctx.reply("Не удалось создать опрос. Попробуйте позже.");
+  }
+});
 bot.command("draw", async (ctx) => {
   try {
     const prompt = ctx.message.text.replace("/draw", "").trim();
