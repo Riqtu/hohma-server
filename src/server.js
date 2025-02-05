@@ -126,21 +126,24 @@ bot.command("poll", async (ctx) => {
     const getNextFriday = () => {
       const today = new Date();
       const dayOfWeek = today.getDay(); // 0 (вс) - 6 (сб)
-      const daysUntilFriday = (5 - dayOfWeek + 7) % 7 || 7; // Если сегодня пятница, берем следующую
+
+      if (dayOfWeek === 5) {
+        return "Сегодня"; // Если уже пятница
+      }
+
+      const daysUntilFriday = (5 - dayOfWeek + 7) % 7 || 7;
       const nextFriday = new Date();
       nextFriday.setDate(today.getDate() + daysUntilFriday);
 
-      // Форматируем дату: например, 09.02.2024
-      const formattedDate = nextFriday.toLocaleDateString("ru-RU", {
+      // Форматируем дату: 09.02.2024
+      return nextFriday.toLocaleDateString("ru-RU", {
         day: "2-digit",
         month: "2-digit",
         year: "numeric",
       });
-
-      return formattedDate;
     };
-    const nextFridayDate = getNextFriday();
 
+    const nextFridayDate = getNextFriday();
     const question = `🎬 Киновечер! (${nextFridayDate})`; // Вставляем дату в название
     const options = ["👍🏻 Буду", "👎🏻 Не буду", "🤔 Надо подумать"]; // Варианты ответа
     const isAnonymous = false; // Если `false`, то ответы будут видны
