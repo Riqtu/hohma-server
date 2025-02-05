@@ -123,7 +123,25 @@ bot.on("callback_query", async (ctx) => {
 });
 bot.command("poll", async (ctx) => {
   try {
-    const question = "🎬 Киновечер! "; // Твой вопрос
+    const getNextFriday = () => {
+      const today = new Date();
+      const dayOfWeek = today.getDay(); // 0 (вс) - 6 (сб)
+      const daysUntilFriday = (5 - dayOfWeek + 7) % 7 || 7; // Если сегодня пятница, берем следующую
+      const nextFriday = new Date();
+      nextFriday.setDate(today.getDate() + daysUntilFriday);
+
+      // Форматируем дату: например, 09.02.2024
+      const formattedDate = nextFriday.toLocaleDateString("ru-RU", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric",
+      });
+
+      return formattedDate;
+    };
+    const nextFridayDate = getNextFriday();
+
+    const question = `🎬 Киновечер! (${nextFridayDate})`; // Вставляем дату в название
     const options = ["👍🏻 Буду", "👎🏻 Не буду", "🤔 Надо подумать"]; // Варианты ответа
     const isAnonymous = false; // Если `false`, то ответы будут видны
 
@@ -136,7 +154,6 @@ bot.command("poll", async (ctx) => {
         is_anonymous: isAnonymous,
       }
     );
-
     // Добавляем кнопку с переходом в твое веб-приложение
     const webAppUrl = process.env.WEB_APP_URL;
     await ctx.telegram.sendMessage(ctx.chat.id, "Открыть Хохму:", {
@@ -151,6 +168,37 @@ bot.command("poll", async (ctx) => {
         ],
       },
     });
+
+    const questionTime = `⏳ Во сколько ждать?`; // Вставляем дату в название
+    const optionsTime = ["19:00", "20:00", "21:00", "22:00"]; // Варианты ответа
+    // Отправляем опрос
+    const pollMessageTime = await ctx.telegram.sendPoll(
+      ctx.chat.id,
+      questionTime,
+      optionsTime,
+      {
+        is_anonymous: isAnonymous,
+      }
+    );
+
+    const questionFood = `🍔 Что кушаем? `; // Вставляем дату в название
+    const optionsFood = [
+      "🍔 Бургеры",
+      "🍣 Роллы",
+      "🍕 Пицца",
+      "🥡 Вок",
+      "🥟 Грузинское",
+      "🤫 Что-то другое",
+    ]; // Варианты ответа
+    // Отправляем опрос
+    const pollMessageFood = await ctx.telegram.sendPoll(
+      ctx.chat.id,
+      questionFood,
+      optionsFood,
+      {
+        is_anonymous: isAnonymous,
+      }
+    );
 
     // Закрепляем опрос
     await ctx.telegram.pinChatMessage(ctx.chat.id, pollMessage.message_id);
