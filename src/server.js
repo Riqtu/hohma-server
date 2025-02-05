@@ -151,6 +151,9 @@ bot.command("poll", async (ctx) => {
         ],
       },
     });
+
+    // Закрепляем опрос
+    await ctx.telegram.pinChatMessage(ctx.chat.id, pollMessage.message_id);
   } catch (error) {
     console.error("Ошибка при создании опроса:", error);
     ctx.reply("Не удалось создать опрос. Попробуйте позже.");
