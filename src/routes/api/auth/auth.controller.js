@@ -1,7 +1,6 @@
 import { validateTelegramAuth, authenticateUser } from "./auth.service.js";
 import { validateAuthRequest } from "./auth.validation.js";
 import crypto from "crypto";
-import jwt from "jsonwebtoken";
 
 /**
  * 📌 1. Аутентификация через Telegram Web App (TWA)
@@ -42,7 +41,7 @@ export const authenticateTelegramUser = async (req, res) => {
 /**
  * 📌 2. Аутентификация через браузер (GET)
  */
-export const authenticateBrowserUser = (req, res) => {
+export const authenticateBrowserUser = async (req, res) => {
   const { hash, ...data } = req.query;
   if (!validateAuthRequest(req, res)) {
     return;
@@ -60,10 +59,20 @@ export const authenticateBrowserUser = (req, res) => {
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-  const token = jwt.sign({ user: data }, process.env.JWT_SECRET, {
-    expiresIn: "1h",
-  });
-  const userInfo = encodeURIComponent(JSON.stringify(data));
+  try {
+    // Проверяем, есть ли пользователь в базе, или создаем нового
+    const { user, token } = await authenticateUser({
+      id: data.id, // Telegram ID
+      first_name: data.first_name,
+      last_name: data.last_name,
+      username: data.username,
+      photo_url: data.photo_url,
+    });
 
-  res.redirect(`${process.env.CLIENT_URL}/auth-success?token=${token}&user=${userInfo}`);
+    // Перенаправляем с токеном
+    const userInfo = encodeURIComponent(JSON.stringify(user));
+    res.redirect(`${process.env.CLIENT_URL}/auth-success?token=${token}&user=${userInfo}`);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 };

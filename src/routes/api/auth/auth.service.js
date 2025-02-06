@@ -2,13 +2,12 @@ import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import UserModel from "../../../models/userModel.js";
 import logger from "#config/logger.js";
-const BOT_TOKEN = process.env.BOT_TOKEN;
-const JWT_SECRET = process.env.JWT_SECRET;
-
 /**
  * 🔹 Проверка подписи Telegram
  */
 export function validateTelegramAuth(initData) {
+  const BOT_TOKEN = process.env.BOT_TOKEN;
+
   if (!BOT_TOKEN) {
     logger.error("Ошибка: BOT_TOKEN не задан!");
     return false;
@@ -52,10 +51,19 @@ export async function authenticateUser(userData) {
     });
     await user.save();
   }
+  const JWT_SECRET = process.env.JWT_SECRET;
 
-  const token = jwt.sign({ id: user._id, telegramId: user.telegramId }, JWT_SECRET, {
-    expiresIn: "7d",
-  });
+  if (!JWT_SECRET) {
+    throw new Error("JWT_SECRET не задан! Проверь .env файл.");
+  }
+
+  const token = jwt.sign(
+    { id: user._id, telegramId: user.telegramId, role: user.role },
+    JWT_SECRET,
+    {
+      expiresIn: "7d",
+    }
+  );
 
   return { user, token };
 }
