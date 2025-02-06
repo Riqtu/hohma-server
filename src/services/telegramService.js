@@ -1,10 +1,7 @@
+import logger from "#config/logger.js";
 import axios from "axios";
 
-const sendMessage = async (
-  chatId = process.env.CHAT_ID,
-  text,
-  parseMode = "MarkdownV2"
-) => {
+const sendMessage = async (chatId = process.env.CHAT_ID, text, parseMode = "MarkdownV2") => {
   try {
     const response = await axios.post(
       `https://api.telegram.org/bot${process.env.BOT_TOKEN}/sendMessage`,
@@ -14,13 +11,10 @@ const sendMessage = async (
         parse_mode: parseMode,
       }
     );
-    console.log("Сообщение отправлено:", response.data);
+    logger.info("Сообщение отправлено:", response.data);
     return response.data;
   } catch (error) {
-    console.error(
-      "Ошибка отправки сообщения в Telegram:",
-      error.response?.data || error.message
-    );
+    logger.error("Ошибка отправки сообщения в Telegram:", error.response?.data || error.message);
     throw new Error("Не удалось отправить сообщение в Telegram");
   }
 };

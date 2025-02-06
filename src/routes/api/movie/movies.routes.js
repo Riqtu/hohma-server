@@ -8,11 +8,7 @@ import {
   deleteMoviePermanentlyHandler,
 } from "./movies.controller.js";
 import validate from "../../../middleware/validateMiddleware.js";
-import {
-  createMovieSchema,
-  updateMovieSchema,
-  movieIdSchema,
-} from "./movies.validation.js";
+import { createMovieSchema, updateMovieSchema, movieIdSchema } from "./movies.validation.js";
 
 const router = express.Router();
 
@@ -25,15 +21,7 @@ router.put(
   validate(updateMovieSchema),
   updateMovieHandler
 );
-router.delete(
-  "/:id",
-  validate(movieIdSchema, "params"),
-  softDeleteMovieHandler
-);
-router.delete(
-  "/:id/permanent",
-  validate(movieIdSchema, "params"),
-  deleteMoviePermanentlyHandler
-);
+router.delete("/:id", validate(movieIdSchema, "params"), softDeleteMovieHandler);
+router.delete("/:id/permanent", validate(movieIdSchema, "params"), deleteMoviePermanentlyHandler);
 
 export default router;

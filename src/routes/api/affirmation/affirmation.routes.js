@@ -7,7 +7,6 @@ import {
 } from "./affirmation.controller.js";
 import validate from "../../../middleware/validateMiddleware.js";
 import { affirmationSchema } from "./affirmation.validation.js";
-
 const router = express.Router();
 
 router.post("/", validate(affirmationSchema), createAffirmationHandler);

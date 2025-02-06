@@ -7,9 +7,9 @@ export const addFinalResults = async (finalResultsData) => {
   const populatedFinalResults = await FinalResults.findById(finalResults._id)
     .populate("firstPlace")
     .populate("secondPlace")
-    .populate("thirdPlace");
-  const escapeMarkdownV2 = (text) =>
-    text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&");
+    .populate("thirdPlace")
+    .lean();
+  const escapeMarkdownV2 = (text) => text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&");
 
   await telegramService.sendMessage(
     process.env.CHAT_ID,
@@ -17,9 +17,7 @@ export const addFinalResults = async (finalResultsData) => {
 *У нас есть победитель 🎉🎉🎉*
 
 *${escapeMarkdownV2(populatedFinalResults.firstPlace.title)}*
-Поздравляем *${escapeMarkdownV2(
-      populatedFinalResults.firstPlace.authorName
-    )}* c Победой 🥇 
+Поздравляем *${escapeMarkdownV2(populatedFinalResults.firstPlace.authorName)}* c Победой 🥇 
 `,
     "MarkdownV2"
   );

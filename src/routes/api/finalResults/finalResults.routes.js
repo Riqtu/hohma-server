@@ -1,8 +1,5 @@
 import express from "express";
-import {
-  addFinalResultsHandler,
-  getAllFinalResultsHandler,
-} from "./finalResults.controller.js";
+import { addFinalResultsHandler, getAllFinalResultsHandler } from "./finalResults.controller.js";
 
 const router = express.Router();
 

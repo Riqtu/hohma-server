@@ -28,7 +28,9 @@ export const getMoviesHandler = async (req, res) => {
 export const getMovieByIdHandler = async (req, res) => {
   try {
     const movie = await getMovieById(req.params.id);
-    if (!movie) return res.status(404).json({ error: "Movie not found" });
+    if (!movie) {
+      return res.status(404).json({ error: "Movie not found" });
+    }
     res.json(movie);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -38,7 +40,9 @@ export const getMovieByIdHandler = async (req, res) => {
 export const updateMovieHandler = async (req, res) => {
   try {
     const movie = await updateMovie(req.params.id, req.body);
-    if (!movie) return res.status(404).json({ error: "Movie not found" });
+    if (!movie) {
+      return res.status(404).json({ error: "Movie not found" });
+    }
     res.json(movie);
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -48,7 +52,9 @@ export const updateMovieHandler = async (req, res) => {
 export const softDeleteMovieHandler = async (req, res) => {
   try {
     const movie = await softDeleteMovie(req.params.id);
-    if (!movie) return res.status(404).json({ error: "Movie not found" });
+    if (!movie) {
+      return res.status(404).json({ error: "Movie not found" });
+    }
     res.json({ message: "Movie marked as deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -58,7 +64,9 @@ export const softDeleteMovieHandler = async (req, res) => {
 export const deleteMoviePermanentlyHandler = async (req, res) => {
   try {
     const movie = await deleteMoviePermanently(req.params.id);
-    if (!movie) return res.status(404).json({ error: "Movie not found" });
+    if (!movie) {
+      return res.status(404).json({ error: "Movie not found" });
+    }
     res.json({ message: "Movie permanently deleted" });
   } catch (error) {
     res.status(500).json({ error: error.message });

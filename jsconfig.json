@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "paths": {
+      "#bot/*": ["src/bot/*"],
+      "#config/*": ["src/config/*"],
+      "#middleware/*": ["src/middleware/*"],
+      "#models/*": ["src/models/*"],
+      "#routes/*": ["src/routes/*"],
+      "#services/*": ["src/services/*"],
+      "#swagger/*": ["src/swagger/*"]
+    },
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "allowJs": true,
+    "checkJs": false
+  },
+  "exclude": ["node_modules", "dist"]
+}

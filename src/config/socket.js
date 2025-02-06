@@ -1,4 +1,5 @@
 import { Server } from "socket.io";
+import logger from "./logger.js";
 
 const setupSocket = (server) => {
   const io = new Server(server, {
@@ -9,12 +10,12 @@ const setupSocket = (server) => {
   });
 
   io.on("connection", (socket) => {
-    console.log("Клиент подключен:", socket.id);
+    logger.info("Клиент подключен:", socket.id);
 
     // Текстовый чат
     socket.emit("message", "Добро пожаловать в чат!");
     socket.on("message", (data) => {
-      console.log(`Сообщение от клиента: ${data}`);
+      logger.info(`Сообщение от клиента: ${data}`);
       io.emit("message", data);
     });
 
@@ -31,7 +32,7 @@ const setupSocket = (server) => {
     });
 
     socket.on("disconnect", () => {
-      console.log("Клиент отключен:", socket.id);
+      logger.info("Клиент отключен:", socket.id);
     });
   });
 

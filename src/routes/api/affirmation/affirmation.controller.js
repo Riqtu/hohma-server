@@ -9,7 +9,9 @@ import {
 export const createAffirmationHandler = async (req, res) => {
   try {
     const { text } = req.body;
-    if (!text) return res.status(400).json({ error: "Text is required" });
+    if (!text) {
+      return res.status(400).json({ error: "Text is required" });
+    }
 
     const newAffirmation = await createAffirmation(text);
     res.status(201).json(newAffirmation);
@@ -32,8 +34,9 @@ export const getAllAffirmationsHandler = async (req, res) => {
 export const getRandomAffirmationHandler = async (req, res) => {
   try {
     const randomAffirmation = await getRandomAffirmation();
-    if (!randomAffirmation)
+    if (!randomAffirmation) {
       return res.status(404).json({ error: "No affirmations found" });
+    }
 
     res.json(randomAffirmation);
   } catch (error) {
@@ -46,8 +49,9 @@ export const deleteAffirmationHandler = async (req, res) => {
   try {
     const { id } = req.params;
     const deletedAffirmation = await deleteAffirmation(id);
-    if (!deletedAffirmation)
+    if (!deletedAffirmation) {
       return res.status(404).json({ error: "Affirmation not found" });
+    }
 
     res.json({ message: "Affirmation deleted", deletedAffirmation });
   } catch (error) {

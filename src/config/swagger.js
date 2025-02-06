@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 import YAML from "yamljs";
 import swaggerUi from "swagger-ui-express";
+import logger from "./logger.js";
 
 const swaggerFiles = ["movie.yaml", "affirmation.yaml", "finalResults.yaml"];
 
@@ -20,7 +21,7 @@ const loadSwaggerDocs = () => {
   swaggerFiles.forEach((file) => {
     const filePath = path.resolve(`./src/swagger/${file}`);
     if (!fs.existsSync(filePath)) {
-      console.error(`⚠️ Файл ${file} не найден! Пропускаем...`);
+      logger.error(`⚠️ Файл ${file} не найден! Пропускаем...`);
       return;
     }
 
@@ -47,7 +48,7 @@ const loadSwaggerDocs = () => {
 
 const setupSwagger = (app) => {
   if (!app) {
-    console.error("Ошибка: передано пустое приложение Express!");
+    logger.error("Ошибка: передано пустое приложение Express!");
     return;
   }
 
@@ -60,9 +61,9 @@ const setupSwagger = (app) => {
       res.sendFile(path.resolve("./tmp/swagger.json"));
     });
 
-    console.log("✅ Swagger подключен! JSON доступен по /swagger.json");
+    logger.info("✅ Swagger подключен! JSON доступен по /swagger.json");
   } catch (error) {
-    console.error("❌ Ошибка при загрузке Swagger:", error.message);
+    logger.error("❌ Ошибка при загрузке Swagger:", error.message);
   }
 };
 
