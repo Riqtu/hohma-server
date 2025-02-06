@@ -5,9 +5,8 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "build": "babel src -d dist",
-    "dev": "nodemon --exec babel-node src/server.js",
-    "start": "node dist/server.js",
+    "dev": "nodemon src/server.js",
+    "start": "pm2 start --no-daemon src/server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
@@ -30,7 +29,6 @@
     "express": "^4.19.2",
     "joi": "^17.13.3",
     "jsonwebtoken": "^9.0.2",
-    "module-alias": "^2.2.3",
     "moment-timezone": "^0.5.46",
     "mongoose": "^8.9.2",
     "node-schedule": "^2.1.1",
@@ -43,12 +41,6 @@
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.25.6",
-    "@babel/core": "^7.25.2",
-    "@babel/node": "^7.26.0",
-    "@babel/preset-env": "^7.25.4",
-    "@babel/register": "^7.24.6",
-    "babel-plugin-module-resolver": "^5.0.2",
     "eslint": "^9.19.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
