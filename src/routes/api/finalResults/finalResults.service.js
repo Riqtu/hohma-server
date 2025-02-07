@@ -41,17 +41,17 @@ export const addFinalResults = async (finalResultsData) => {
 *У нас есть победитель 🎉🎉🎉*
 
 *${escapeMarkdownV2(populatedFinalResults.firstPlace.title)}*
-Поздравляем *${escapeMarkdownV2(populatedFinalResults.firstPlace.author.firstName)}* c Победой 🥇 
+🥇 Поздравляем *${escapeMarkdownV2(populatedFinalResults.firstPlace.author.firstName)}* c Победой  
 Ты получаешь 100 хохмокоинов 🪙
 
 ${escapeMarkdownV2("Чуть-чуть не хватило? Не расстраивайся!")} 🤗
 
 *${escapeMarkdownV2(populatedFinalResults.secondPlace.title)}*
-Поздравляем *${escapeMarkdownV2(populatedFinalResults.secondPlace.author.firstName)}* c Вторым местом 🥈
+🥈 Поздравляем *${escapeMarkdownV2(populatedFinalResults.secondPlace.author.firstName)}* c Вторым местом 
 Ты получаешь 50 хохмокоинов 🪙
 
 *${escapeMarkdownV2(populatedFinalResults.thirdPlace.title)}*
-Поздравляем *${escapeMarkdownV2(populatedFinalResults.thirdPlace.author.firstName)}* c Третьим местом 🥉
+🥉 Поздравляем *${escapeMarkdownV2(populatedFinalResults.thirdPlace.author.firstName)}* c Третьим местом 
 Ты получаешь 20 хохмокоинов 🪙
 `,
     "MarkdownV2"
