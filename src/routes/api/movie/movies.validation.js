@@ -6,14 +6,9 @@ export const createMovieSchema = Joi.object({
     "string.empty": "Название фильма не может быть пустым",
     "any.required": "Название фильма обязательно",
   }),
-  author: Joi.string().optional().messages({
-    "string.empty": "Ник автора не может быть пустым",
-  }),
-  authorName: Joi.string().optional().messages({
-    "string.empty": "Имя автора не может быть пустым",
-  }),
-  authorImg: Joi.string().optional().uri().messages({
-    "string.uri": "URL изображения автора должен быть корректным",
+  telegramId: Joi.string().required().messages({
+    "string.empty": "Пользователь не может быть пустым",
+    "any.required": "Пользователь обязателен",
   }),
 });
 
