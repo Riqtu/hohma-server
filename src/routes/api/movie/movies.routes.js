@@ -24,10 +24,17 @@ router.put(
   validate(updateMovieSchema),
   updateMovieHandler
 );
-router.delete("/:id", authMiddleware, validate(movieIdSchema, "params"), softDeleteMovieHandler);
+router.delete(
+  "/:id",
+  authMiddleware,
+  roleMiddleware(["moderator", "admin"]),
+  validate(movieIdSchema, "params"),
+  softDeleteMovieHandler
+);
 router.delete(
   "/:id/permanent",
   authMiddleware,
+
   validate(movieIdSchema, "params"),
   deleteMoviePermanentlyHandler
 );
