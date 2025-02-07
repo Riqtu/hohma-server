@@ -1,9 +1,10 @@
+// src/bot/bot.js
 import { Telegraf } from "telegraf";
 import randomCommand from "./commands/random.js";
 import pollCommand from "./commands/poll.js";
 import openCommand from "./commands/open.js";
 import drawCommand from "./commands/draw.js";
-import registerMessageHandler from "./events/message.js";
+import unifiedTextHandler from "./events/message.js";
 
 const initializeBot = () => {
   if (!process.env.BOT_TOKEN) {
@@ -19,16 +20,16 @@ const initializeBot = () => {
     { command: "draw", description: "Нарисовать картинку по описанию" },
   ]);
 
-  // Передаём `bot` в команды, чтобы они могли зарегистрироваться
+  // Регистрируем единый обработчик текстовых сообщений
+  unifiedTextHandler(bot);
+
+  // Регистрируем остальные команды
   randomCommand(bot);
   pollCommand(bot);
   openCommand(bot);
   drawCommand(bot);
 
-  registerMessageHandler(bot);
-
   return bot;
 };
 
-// Экспортируем функцию инициализации бота, но НЕ запускаем `bot.launch()` здесь!
 export default initializeBot;
