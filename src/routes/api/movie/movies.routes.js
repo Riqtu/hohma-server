@@ -15,7 +15,7 @@ import roleMiddleware from "#middleware/roleMiddleware.js";
 const router = express.Router();
 
 router.post("/", authMiddleware, validate(createMovieSchema), createMovieHandler);
-router.get("/", authMiddleware, roleMiddleware(["user", "admin"]), getMoviesHandler);
+router.get("/", authMiddleware, roleMiddleware(["user", "moderator", "admin"]), getMoviesHandler);
 router.get("/:id", authMiddleware, validate(movieIdSchema, "params"), getMovieByIdHandler);
 router.put(
   "/:id",
