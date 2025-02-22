@@ -118,10 +118,14 @@ const downloadTikTokVideo = async (videoUrl) => {
     }
 
     const videoObj = awemeList[0].video;
-    const downloadLink =
-      videoObj.download_addr?.url_list?.[0] || videoObj.downloadAddr?.url_list?.[0];
+    let downloadLink =
+      videoObj.download_addr?.url_list?.[0] ||
+      videoObj.downloadAddr?.url_list?.[0] ||
+      videoObj.play_addr?.url_list?.[0];
 
     if (!downloadLink) {
+      // Логирование полученных данных для отладки
+      logger.error(`Ссылки для скачивания отсутствуют. Данные видео: ${JSON.stringify(videoObj)}`);
       throw new Error("Ссылка для скачивания не найдена в данных");
     }
 
