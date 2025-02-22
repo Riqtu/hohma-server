@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import TikTokScraper from "@xct007/tiktok-scraper";
 import { IgApiClient } from "instagram-private-api";
+import { SocksProxyAgent } from "socks-proxy-agent";
 
 // Функция для разворачивания коротких ссылок
 const expandShortUrl = async (shortUrl) => {
@@ -111,7 +112,14 @@ const downloadInstagramVideo = async (postUrl) => {
 const downloadTikTokVideo = async (videoUrl) => {
   try {
     logger.info(`Получение данных о видео из TikTok: ${videoUrl}`);
-    const videoData = await TikTokScraper(videoUrl, { parse: false });
+
+    // Настраиваем SOCKS5-прокси
+    const agent = new SocksProxyAgent(process.env.SOCKS5_PROXY);
+    // Запрос через прокси
+    const videoData = await TikTokScraper(videoUrl, {
+      parse: false,
+      axiosConfig: { httpAgent: agent, httpsAgent: agent },
+    });
     const awemeList = Array.isArray(videoData) ? videoData : videoData.collector;
     if (!awemeList || !awemeList.length) {
       throw new Error("Ссылка для скачивания не найдена");
@@ -124,13 +132,19 @@ const downloadTikTokVideo = async (videoUrl) => {
       videoObj.play_addr?.url_list?.[0];
 
     if (!downloadLink) {
-      // Логирование полученных данных для отладки
       logger.error(`Ссылки для скачивания отсутствуют. Данные видео: ${JSON.stringify(videoObj)}`);
       throw new Error("Ссылка для скачивания не найдена в данных");
     }
 
     logger.info(`Найден downloadLink: ${downloadLink}`);
-    const response = await axios.get(downloadLink, { responseType: "stream" });
+
+    // Проксируем сам запрос на скачивание видео
+    const response = await axios.get(downloadLink, {
+      responseType: "stream",
+      httpAgent: agent,
+      httpsAgent: agent,
+    });
+
     const tempDir = path.resolve(process.cwd(), "downloads");
     if (!fs.existsSync(tempDir)) {
       fs.mkdirSync(tempDir);
