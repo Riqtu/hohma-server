@@ -5,6 +5,7 @@ import pollCommand from "./commands/poll.js";
 import openCommand from "./commands/open.js";
 import drawCommand from "./commands/draw.js";
 import unifiedTextHandler from "./events/message.js";
+import downloadCommand from "./commands/download.js";
 
 const initializeBot = () => {
   if (!process.env.BOT_TOKEN) {
@@ -18,6 +19,8 @@ const initializeBot = () => {
     { command: "poll", description: "Создать опрос на киновечер" },
     { command: "random", description: "Получить случайный ответ (Да или Нет)" },
     { command: "draw", description: "Нарисовать картинку по описанию" },
+    { command: "draw", description: "Нарисовать картинку по описанию" },
+    { command: "download", description: "Скачать видео с TikTok или Instagram" },
   ]);
 
   // Регистрируем единый обработчик текстовых сообщений
@@ -28,7 +31,7 @@ const initializeBot = () => {
   pollCommand(bot);
   openCommand(bot);
   drawCommand(bot);
-
+  downloadCommand(bot);
   return bot;
 };
 
