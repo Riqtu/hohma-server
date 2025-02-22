@@ -118,7 +118,7 @@ const downloadTikTokVideo = async (videoUrl) => {
     // Запрос через прокси
     const videoData = await TikTokScraper(videoUrl, {
       parse: false,
-      axiosConfig: { httpAgent: agent, httpsAgent: agent },
+      proxy: process.env.SOCKS5_PROXY,
     });
     const awemeList = Array.isArray(videoData) ? videoData : videoData.collector;
     if (!awemeList || !awemeList.length) {
