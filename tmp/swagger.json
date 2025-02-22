@@ -12,12 +12,27 @@
         "tags": [
           "Movies"
         ],
+        "description": "При создании фильма передаётся объект с полями: - **title**: название фильма. - **telegramId**: идентификатор пользователя, который создаёт фильм (используется для поиска автора).\n",
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Movie"
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Название фильма"
+                  },
+                  "telegramId": {
+                    "type": "string",
+                    "description": "Telegram ID пользователя, создающего фильм"
+                  }
+                },
+                "required": [
+                  "title",
+                  "telegramId"
+                ]
               }
             }
           }
@@ -120,7 +135,16 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Movie"
+                "type": "object",
+                "properties": {
+                  "title": {
+                    "type": "string",
+                    "description": "Новое название фильма"
+                  }
+                },
+                "required": [
+                  "title"
+                ]
               }
             }
           }
@@ -145,7 +169,7 @@
         }
       },
       "delete": {
-        "summary": "Удалить фильм",
+        "summary": "Удалить фильм (логически)",
         "tags": [
           "Movies"
         ],
@@ -162,7 +186,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Фильм удален"
+            "description": "Фильм помечен как удаленный"
           },
           "404": {
             "description": "Фильм не найден"
@@ -324,12 +348,234 @@
           }
         }
       }
+    },
+    "/api/users": {
+      "post": {
+        "summary": "Создать нового пользователя",
+        "tags": [
+          "Users"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Пользователь успешно создан",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка валидации запроса"
+          }
+        }
+      },
+      "get": {
+        "summary": "Получить список всех пользователей",
+        "tags": [
+          "Users"
+        ],
+        "responses": {
+          "200": {
+            "description": "Список пользователей",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "summary": "Получить пользователя по идентификатору",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Уникальный идентификатор пользователя"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Информация о пользователе",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Пользователь не найден"
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      },
+      "put": {
+        "summary": "Обновить данные пользователя",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Уникальный идентификатор пользователя"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/User"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Пользователь успешно обновлён",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/User"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Ошибка валидации запроса"
+          },
+          "404": {
+            "description": "Пользователь не найден"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Удалить пользователя",
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "description": "Уникальный идентификатор пользователя"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Пользователь успешно удалён"
+          },
+          "404": {
+            "description": "Пользователь не найден"
+          },
+          "500": {
+            "description": "Ошибка сервера"
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": {
+            "type": "string",
+            "description": "Уникальный идентификатор пользователя"
+          },
+          "telegramId": {
+            "type": "string",
+            "description": "Уникальный Telegram ID пользователя"
+          },
+          "firstName": {
+            "type": "string",
+            "description": "Имя пользователя"
+          },
+          "lastName": {
+            "type": "string",
+            "description": "Фамилия пользователя"
+          },
+          "username": {
+            "type": "string",
+            "description": "Логин (username) пользователя"
+          },
+          "photoUrl": {
+            "type": "string",
+            "description": "URL фотографии пользователя"
+          },
+          "coins": {
+            "type": "number",
+            "description": "Количество монет у пользователя",
+            "default": 0
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin",
+              "moderator"
+            ],
+            "description": "Роль пользователя",
+            "default": "user"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Дата создания пользователя"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Дата обновления пользователя"
+          }
+        }
+      },
       "Movie": {
         "type": "object",
+        "description": "Фильм",
         "required": [
           "title"
         ],
@@ -343,16 +589,16 @@
             "description": "Название фильма"
           },
           "author": {
-            "type": "string",
+            "oneOf": [
+              {
+                "type": "string",
+                "description": "Идентификатор автора (ObjectId)"
+              },
+              {
+                "$ref": "#/components/schemas/User"
+              }
+            ],
             "description": "Автор фильма"
-          },
-          "authorName": {
-            "type": "string",
-            "description": "Полное имя автора фильма"
-          },
-          "authorImg": {
-            "type": "string",
-            "description": "Ссылка на изображение автора"
           },
           "createdAt": {
             "type": "string",
@@ -361,7 +607,7 @@
           },
           "isDeleted": {
             "type": "boolean",
-            "description": "Флаг удаления"
+            "description": "Флаг удаления фильма"
           },
           "deletedAt": {
             "type": "string",

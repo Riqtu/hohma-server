@@ -6,12 +6,32 @@ info:
 
 tags:
   - name: Movies
-    description: API для управления фильмами
+    description: API для работы с фильмами
 
 components:
   schemas:
+    User:
+      type: object
+      description: Пользователь (автор фильма)
+      properties:
+        _id:
+          type: string
+          description: Уникальный идентификатор пользователя
+        username:
+          type: string
+          description: Логин пользователя
+        firstName:
+          type: string
+          description: Имя пользователя
+        lastName:
+          type: string
+          description: Фамилия пользователя
+        photoUrl:
+          type: string
+          description: URL фотографии пользователя
     Movie:
       type: object
+      description: Фильм
       required:
         - title
       properties:
@@ -22,21 +42,18 @@ components:
           type: string
           description: Название фильма
         author:
-          type: string
+          oneOf:
+            - type: string
+              description: Идентификатор автора (ObjectId)
+            - $ref: "#/components/schemas/User"
           description: Автор фильма
-        authorName:
-          type: string
-          description: Полное имя автора фильма
-        authorImg:
-          type: string
-          description: Ссылка на изображение автора
         createdAt:
           type: string
           format: date-time
           description: Дата создания фильма
         isDeleted:
           type: boolean
-          description: Флаг удаления
+          description: Флаг удаления фильма
         deletedAt:
           type: string
           format: date-time
@@ -48,27 +65,41 @@ paths:
     post:
       summary: Создать новый фильм
       tags: [Movies]
+      description: >
+        При создании фильма передаётся объект с полями:
+        - **title**: название фильма.
+        - **telegramId**: идентификатор пользователя, который создаёт фильм (используется для поиска автора).
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Movie"
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Название фильма
+                telegramId:
+                  type: string
+                  description: Telegram ID пользователя, создающего фильм
+              required:
+                - title
+                - telegramId
       responses:
-        201:
+        "201":
           description: Фильм создан
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Movie"
-        400:
+        "400":
           description: Ошибка валидации
 
     get:
       summary: Получить список всех фильмов
       tags: [Movies]
       responses:
-        200:
+        "200":
           description: Список фильмов
           content:
             application/json:
@@ -76,7 +107,7 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Movie"
-        500:
+        "500":
           description: Ошибка сервера
 
   /api/movies/{id}:
@@ -91,15 +122,15 @@ paths:
           required: true
           description: Уникальный идентификатор фильма
       responses:
-        200:
+        "200":
           description: Данные фильма
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Movie"
-        404:
+        "404":
           description: Фильм не найден
-        500:
+        "500":
           description: Ошибка сервера
 
     put:
@@ -117,21 +148,27 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Movie"
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Новое название фильма
+              required:
+                - title
       responses:
-        200:
+        "200":
           description: Фильм обновлен
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Movie"
-        404:
+        "404":
           description: Фильм не найден
-        400:
+        "400":
           description: Ошибка валидации
 
     delete:
-      summary: Удалить фильм
+      summary: Удалить фильм (логически)
       tags: [Movies]
       parameters:
         - in: path
@@ -141,9 +178,9 @@ paths:
           required: true
           description: Уникальный идентификатор фильма
       responses:
-        200:
-          description: Фильм удален
-        404:
+        "200":
+          description: Фильм помечен как удаленный
+        "404":
           description: Фильм не найден
-        500:
+        "500":
           description: Ошибка сервера

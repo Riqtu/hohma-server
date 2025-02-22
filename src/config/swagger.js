@@ -4,7 +4,7 @@ import YAML from "yamljs";
 import swaggerUi from "swagger-ui-express";
 import logger from "./logger.js";
 
-const swaggerFiles = ["movie.yaml", "affirmation.yaml", "finalResults.yaml"];
+const swaggerFiles = ["movie.yaml", "affirmation.yaml", "finalResults.yaml", "users.yaml"];
 
 const loadSwaggerDocs = () => {
   let combinedSwagger = {
