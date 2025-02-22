@@ -24,7 +24,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@xct007/tiktok-scraper": "github:Riqtu/tiktok-scraper",
+    "@riqtu/tiktok-scraper": "^1.0.0",
     "axios": "^1.7.5",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

@@ -2,7 +2,7 @@ import logger from "#config/logger.js";
 import axios from "axios";
 import fs from "fs";
 import path from "path";
-import TikTokScraper from "@xct007/tiktok-scraper";
+import TikTokScraper from "@riqtu/tiktok-scraper";
 import { IgApiClient } from "instagram-private-api";
 import { SocksProxyAgent } from "socks-proxy-agent";
 
