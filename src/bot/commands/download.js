@@ -5,6 +5,7 @@ import path from "path";
 import TikTokScraper from "@riqtu/tiktok-scraper";
 import { IgApiClient } from "instagram-private-api";
 import { SocksProxyAgent } from "socks-proxy-agent";
+import { uploadToS3 } from "#services/s3.js";
 
 // Функция для разворачивания коротких ссылок
 const expandShortUrl = async (shortUrl) => {
@@ -165,17 +166,12 @@ const downloadTikTokVideo = async (videoUrl) => {
 };
 
 // Основная функция, которая определяет платформу и скачивает видео
-export const downloadVideo = async (url, bot, ctx) => {
+export const downloadVideo = async (url, bot, ctx = null) => {
   try {
-    // Сохраняем сообщение об уведомлении
-    const loadingMessage = await ctx.reply("🔄 Загружаю видео, подожди немного...");
-    logger.info(`URL для загрузки: ${url}`);
+    logger.info(`📥 Загружаем видео с URL: ${url}`);
 
     const expandedUrl = await expandShortUrl(url);
-    logger.info(`Расширенный URL: ${expandedUrl}`);
-
     const cleanedUrl = cleanUrl(expandedUrl);
-    logger.info(`Чистый URL: ${cleanedUrl}`);
 
     let videoPath;
     if (cleanedUrl.includes("tiktok.com") || cleanedUrl.includes("vt.tiktok.com")) {
@@ -183,17 +179,32 @@ export const downloadVideo = async (url, bot, ctx) => {
     } else if (cleanedUrl.includes("instagram.com")) {
       videoPath = await downloadInstagramVideo(cleanedUrl);
     } else {
-      return ctx.reply("❌ Поддерживаются только ссылки на TikTok и Instagram.");
+      if (ctx) {
+        return ctx.reply("❌ Поддерживаются только ссылки на TikTok и Instagram.");
+      }
+      return null;
     }
 
-    await ctx.replyWithVideo({ source: videoPath });
-    fs.unlinkSync(videoPath); // удаляем временный файл после отправки
+    // Генерируем уникальное имя файла
+    const fileName = `video_${Date.now()}.mp4`;
 
-    // Удаляем сообщение уведомления
-    await ctx.deleteMessage(loadingMessage.message_id);
+    // Загружаем видео в S3
+    const s3Url = await uploadToS3(videoPath, fileName);
+
+    // Удаляем локальный файл после загрузки
+    fs.unlinkSync(videoPath);
+
+    if (ctx) {
+      return await ctx.replyWithVideo(s3Url);
+    }
+
+    return s3Url;
   } catch (error) {
-    logger.error("Ошибка загрузки видео:", error);
-    ctx.reply("🚨 Произошла ошибка при загрузке видео.");
+    logger.error("❌ Ошибка загрузки видео:", error);
+    if (ctx) {
+      ctx.reply("🚨 Произошла ошибка при загрузке видео.");
+    }
+    return null;
   }
 };
 

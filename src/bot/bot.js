@@ -6,6 +6,7 @@ import openCommand from "./commands/open.js";
 import drawCommand from "./commands/draw.js";
 import unifiedTextHandler from "./events/message.js";
 import downloadCommand from "./commands/download.js";
+import { handleInlineQuery } from "./events/inline.js";
 
 const initializeBot = () => {
   if (!process.env.BOT_TOKEN) {
@@ -25,6 +26,7 @@ const initializeBot = () => {
 
   // Регистрируем единый обработчик текстовых сообщений
   unifiedTextHandler(bot);
+  handleInlineQuery(bot);
 
   // Регистрируем остальные команды
   randomCommand(bot);
