@@ -1,14 +1,15 @@
-import AWS from "aws-sdk";
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import fs from "fs";
 import logger from "#config/logger.js";
-import dotenv from "dotenv";
-dotenv.config();
-// Конфигурация S3 (берем данные из .env)
-const s3 = new AWS.S3({
-  accessKeyId: process.env.S3_ACCESS_KEY,
-  secretAccessKey: process.env.S3_SECRET_KEY,
+
+// Создаем клиент S3 с нужными параметрами
+const s3Client = new S3Client({
   region: process.env.S3_REGION,
-  endpoint: process.env.S3_ENDPOINT, // Например, Yandex Object Storage или MinIO
+  endpoint: process.env.S3_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.S3_ACCESS_KEY,
+    secretAccessKey: process.env.S3_SECRET_KEY,
+  },
 });
 
 // Функция загрузки файла в S3
@@ -21,15 +22,17 @@ export const uploadToS3 = async (filePath, fileName) => {
       Key: `videos/${fileName}`, // Путь внутри бакета
       Body: fileContent,
       ContentType: "video/mp4",
-      ACL: "public-read", // Делаем файл доступным по URL
+      ACL: "public-read", // если необходимо оставить публичный доступ
     };
 
-    const uploadResult = await s3.upload(params).promise();
-    logger.info(`✅ Файл загружен в S3: ${uploadResult.Location}`);
+    const command = new PutObjectCommand(params);
+    await s3Client.send(command);
+    logger.info(`✅ Файл загружен в S3`);
 
-    return uploadResult.Location; // Возвращаем URL файла
+    // AWS SDK v3 не возвращает Location, поэтому URL можно сформировать вручную
+    return `https://${process.env.S3_BUCKET_NAME}.${process.env.S3_ENDPOINT}/videos/${fileName}`;
   } catch (error) {
-    logger.error("❌ Ошибка загрузки в S3:", error);
+    logger.error(`❌ Ошибка загрузки в S3: ${error}`);
     throw error;
   }
 };
@@ -42,9 +45,10 @@ export const deleteFromS3 = async (fileName) => {
       Key: `videos/${fileName}`,
     };
 
-    await s3.deleteObject(params).promise();
+    const command = new DeleteObjectCommand(params);
+    await s3Client.send(command);
     logger.info(`🗑️ Файл удален из S3: videos/${fileName}`);
   } catch (error) {
-    logger.error("❌ Ошибка удаления из S3:", error);
+    logger.error(`❌ Ошибка удаления из S3: ${error}`);
   }
 };

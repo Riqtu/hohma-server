@@ -1,11 +1,12 @@
 import dotenv from "dotenv";
+// Подключение переменных окружения
+dotenv.config();
 import http from "http";
 import app from "./app.js";
 import setupSocket from "./config/socket.js";
 import logger from "#config/logger.js";
 import { initializeServer } from "#config/serverSetup.js";
-// Подключение переменных окружения
-dotenv.config();
+
 // Порт сервера
 const port = process.env.PORT || 3000;
 

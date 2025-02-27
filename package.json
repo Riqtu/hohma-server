@@ -5,8 +5,8 @@
   "main": "src/server.js",
   "type": "module",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "pm2 start --no-daemon src/server.js",
+    "dev": "nodemon -r dotenv/config src/server.js",
+    "start": "pm2 start --no-daemon --node-args=\"-r dotenv/config\" src/server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "swagger": "node scripts/swagger-autogen.js"
@@ -24,6 +24,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.750.0",
     "@riqtu/tiktok-scraper": "^1.0.0",
     "aws-sdk": "^2.1692.0",
     "axios": "^1.7.5",
@@ -43,6 +44,7 @@
     "telegraf": "^4.16.3",
     "uuid": "^10.0.0",
     "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0",
     "yamljs": "^0.3.0"
   },
   "devDependencies": {
