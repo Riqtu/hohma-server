@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import jwt from "jsonwebtoken";
 import UserModel from "../../../models/userModel.js";
-import logger from "#config/logger.js";
+import logger from "./../../../config/logger.js";
 
 /**
  * 🔹 Проверка подписи Telegram

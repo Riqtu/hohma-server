@@ -5,7 +5,7 @@ import http from "http";
 import app from "./app.js";
 import logger from "./config/logger.js";
 import { initializeServer } from "./config/serverSetup.js";
-import setupSocket from "#config/socket.js";
+import setupSocket from "./config/socket.js";
 
 // Порт сервера
 const port = process.env.PORT || 3000;

@@ -1,4 +1,4 @@
-import { getEnvVar } from "#config/env.js";
+import { getEnvVar } from "./../../config/env.js";
 import { Telegraf } from "telegraf";
 
 const openCommand = (bot: Telegraf) => {

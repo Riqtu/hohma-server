@@ -1,7 +1,7 @@
 import express, { Router } from "express"; // Импортируем Router из express
 import { sendTelegramMessageHandler } from "./telegram.controller.js";
-import authMiddleware from "#middleware/authMiddleware.js";
-import roleMiddleware from "#middleware/roleMiddleware.js";
+import authMiddleware from "./../../../middleware/authMiddleware.js";
+import roleMiddleware from "./../../../middleware/roleMiddleware.js";
 
 // Создаем маршрутизатор
 const router: Router = express.Router();

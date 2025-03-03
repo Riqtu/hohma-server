@@ -1,8 +1,8 @@
 import schedule from "node-schedule";
 import axios from "axios";
 import telegramService from "../services/telegramService.js";
-import logger from "#config/logger.js";
-import { getEnvVar } from "#config/env.js";
+import logger from "./../config/logger.js";
+import { getEnvVar } from "./../config/env.js";
 
 const escapeMarkdownV2 = (text: string) => text.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&");
 

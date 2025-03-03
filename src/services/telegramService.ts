@@ -1,5 +1,5 @@
-import { getEnvVar } from "#config/env.js";
-import logger from "#config/logger.js";
+import { getEnvVar } from "./../config/env.js";
+import logger from "./../config/logger.js";
 import axios from "axios";
 
 const sendMessage = async (

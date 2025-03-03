@@ -1,6 +1,6 @@
 import axios from "axios";
-import logger from "#config/logger.js";
-import { downloadVideo } from "#bot/commands/download.js";
+import logger from "./../../config/logger.js";
+import { downloadVideo } from "./../../bot/commands/download.js";
 import { Context, Telegraf } from "telegraf";
 import { InlineQueryResultVideo } from "telegraf/types";
 

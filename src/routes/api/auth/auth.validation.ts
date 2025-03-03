@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import logger from "#config/logger.js";
+import logger from "./../../../config/logger.js";
 
 export function validateAuthRequest(req: Request, res: Response): boolean {
   if (!process.env.BOT_TOKEN) {

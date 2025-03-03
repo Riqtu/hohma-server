@@ -1,8 +1,8 @@
-import logger from "#config/logger.js";
+import logger from "./../../config/logger.js";
 import axios from "axios";
 import TikTokScraper from "@riqtu/tiktok-scraper";
 import { IgApiClient } from "instagram-private-api";
-import { getEnvVar } from "#config/env.js";
+import { getEnvVar } from "./../../config/env.js";
 import { Context, Telegraf } from "telegraf";
 
 // Функция для разворачивания коротких ссылок

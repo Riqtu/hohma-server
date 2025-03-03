@@ -1,4 +1,4 @@
-import logger from "#config/logger.js";
+import logger from "./../../config/logger.js";
 import { Context, Telegraf } from "telegraf";
 
 const getNextFriday = () => {

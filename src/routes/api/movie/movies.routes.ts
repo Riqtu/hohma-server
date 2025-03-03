@@ -9,8 +9,8 @@ import {
 } from "./movies.controller.js";
 import validate from "../../../middleware/validateMiddleware.js";
 import { createMovieSchema, updateMovieSchema, movieIdSchema } from "./movies.validation.js";
-import authMiddleware from "#middleware/authMiddleware.js";
-import roleMiddleware from "#middleware/roleMiddleware.js";
+import authMiddleware from "../../../middleware/authMiddleware.js";
+import roleMiddleware from "../../../middleware/roleMiddleware.js";
 
 const router = express.Router();
 

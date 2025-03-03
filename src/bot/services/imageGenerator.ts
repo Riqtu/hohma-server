@@ -1,5 +1,5 @@
 // src/bot/services/imageGenerator.js
-import logger from "#config/logger.js";
+import logger from "./../../config/logger.js";
 import axios from "axios";
 import fs from "fs";
 import path from "path";

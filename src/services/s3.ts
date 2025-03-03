@@ -5,8 +5,8 @@ import {
   ObjectCannedACL,
 } from "@aws-sdk/client-s3";
 import fs from "fs";
-import logger from "#config/logger.js";
-import { getEnvVar } from "#config/env.js";
+import logger from "./../config/logger.js";
+import { getEnvVar } from "./../config/env.js";
 
 // Создаем клиент S3 с нужными параметрами
 const s3Client = new S3Client({

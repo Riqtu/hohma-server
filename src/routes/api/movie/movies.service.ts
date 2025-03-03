@@ -1,5 +1,5 @@
-import logger from "#config/logger.js";
-import UserModel from "#models/userModel.js";
+import logger from "./../../../config/logger.js";
+import UserModel from "./../../../models/userModel.js";
 import Movie, { IMovie } from "../../../models/Movie.js";
 import axios from "axios";
 

@@ -1,9 +1,9 @@
 // src/bot/events/message.js
 import axios from "axios";
-import logger from "#config/logger.js";
+import logger from "./../../config/logger.js";
 import { userState } from "../sharedState.js"; // Импорт общего состояния
-import { generateImage } from "#bot/services/imageGenerator.js";
-import { downloadVideo } from "#bot/commands/download.js";
+import { generateImage } from "./../../bot/services/imageGenerator.js";
+import { downloadVideo } from "./../../bot/commands/download.js";
 import { Telegraf, Context } from "telegraf";
 /**
  * Единый обработчик входящих текстовых сообщений.

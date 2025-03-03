@@ -1,4 +1,4 @@
-import { getEnvVar } from "#config/env.js";
+import { getEnvVar } from "./../config/env.js";
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 

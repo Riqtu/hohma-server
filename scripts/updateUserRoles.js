@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import logger from "#config/logger.js";
-import UserModel from "#models/userModel.js";
+import logger from "./../../config/logger.js";
+import UserModel from "./../../models/userModel.js";
 
 dotenv.config();
 
