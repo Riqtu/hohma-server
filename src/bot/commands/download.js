@@ -1,11 +1,7 @@
 import logger from "#config/logger.js";
 import axios from "axios";
-import fs from "fs";
-import path from "path";
 import TikTokScraper from "@riqtu/tiktok-scraper";
 import { IgApiClient } from "instagram-private-api";
-import { SocksProxyAgent } from "socks-proxy-agent";
-import { uploadToS3 } from "#services/s3.js";
 
 // Функция для разворачивания коротких ссылок
 const expandShortUrl = async (shortUrl) => {
@@ -91,22 +87,7 @@ const downloadInstagramVideo = async (postUrl) => {
     throw new Error("Ссылка для скачивания не найдена в данных Instagram");
   }
 
-  // Скачиваем видео по прямой ссылке
-  const response = await axios.get(videoUrl, { responseType: "stream" });
-  const tempDir = path.resolve(process.cwd(), "downloads");
-  if (!fs.existsSync(tempDir)) {
-    fs.mkdirSync(tempDir);
-  }
-  const videoPath = path.join(tempDir, `instagram_${Date.now()}.mp4`);
-  const writer = fs.createWriteStream(videoPath);
-  response.data.pipe(writer);
-
-  await new Promise((resolve, reject) => {
-    writer.on("finish", resolve);
-    writer.on("error", reject);
-  });
-
-  return videoPath;
+  return videoUrl;
 };
 
 // Функция для скачивания видео из TikTok с использованием @xct007/tiktok-scraper
@@ -114,8 +95,6 @@ const downloadTikTokVideo = async (videoUrl) => {
   try {
     logger.info(`Получение данных о видео из TikTok: ${videoUrl}`);
 
-    // Настраиваем SOCKS5-прокси
-    const agent = new SocksProxyAgent(process.env.SOCKS5_PROXY);
     // Запрос через прокси
     const videoData = await TikTokScraper(videoUrl, {
       parse: false,
@@ -139,27 +118,7 @@ const downloadTikTokVideo = async (videoUrl) => {
 
     logger.info(`Найден downloadLink: ${downloadLink}`);
 
-    // Проксируем сам запрос на скачивание видео
-    const response = await axios.get(downloadLink, {
-      responseType: "stream",
-      httpAgent: agent,
-      httpsAgent: agent,
-    });
-
-    const tempDir = path.resolve(process.cwd(), "downloads");
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir);
-    }
-    const videoPath = path.join(tempDir, `tiktok_${Date.now()}.mp4`);
-    const writer = fs.createWriteStream(videoPath);
-    response.data.pipe(writer);
-
-    await new Promise((resolve, reject) => {
-      writer.on("finish", resolve);
-      writer.on("error", reject);
-    });
-
-    return videoPath;
+    return downloadLink;
   } catch (error) {
     throw error;
   }
@@ -185,20 +144,8 @@ export const downloadVideo = async (url, bot, ctx = null) => {
       return null;
     }
 
-    // Генерируем уникальное имя файла
-    const fileName = `video_${Date.now()}.mp4`;
-
-    // Загружаем видео в S3
-    const s3Url = await uploadToS3(videoPath, fileName);
-
-    // Удаляем локальный файл после загрузки
-    fs.unlinkSync(videoPath);
-
-    if (ctx) {
-      return await ctx.replyWithVideo(s3Url);
-    }
-
-    return s3Url;
+    logger.info(`Ссылка: ${videoPath}`);
+    return videoPath;
   } catch (error) {
     logger.error("❌ Ошибка загрузки видео:", error);
     if (ctx) {

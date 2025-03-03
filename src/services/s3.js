@@ -27,10 +27,12 @@ export const uploadToS3 = async (filePath, fileName) => {
 
     const command = new PutObjectCommand(params);
     await s3Client.send(command);
-    logger.info(`✅ Файл загружен в S3`);
+    logger.info(
+      `✅ Файл загружен в S3 по пути: ${process.env.S3_ENDPOINT.replace(/\/$/, "")}/${process.env.S3_BUCKET_NAME}/videos/${fileName}`
+    );
 
     // AWS SDK v3 не возвращает Location, поэтому URL можно сформировать вручную
-    return `https://${process.env.S3_BUCKET_NAME}.${process.env.S3_ENDPOINT}/videos/${fileName}`;
+    return `${process.env.S3_ENDPOINT.replace(/\/$/, "")}/${process.env.S3_BUCKET_NAME}/videos/${fileName}`;
   } catch (error) {
     logger.error(`❌ Ошибка загрузки в S3: ${error}`);
     throw error;

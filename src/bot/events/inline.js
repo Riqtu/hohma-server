@@ -5,9 +5,7 @@ import { downloadVideo } from "#bot/commands/download.js";
 export const handleInlineQuery = (bot) => {
   bot.on("inline_query", async (ctx) => {
     const query = ctx.inlineQuery.query.trim();
-    if (!query) {
-      return;
-    }
+    if (!query) return;
 
     const urlRegex =
       /(https?:\/\/(?:www\.)?(?:tiktok\.com|vt\.tiktok\.com|instagram\.com)\/[^\s]+)/i;
@@ -17,22 +15,21 @@ export const handleInlineQuery = (bot) => {
       const url = urlMatch[0];
 
       try {
-        logger.info(`🚀 Обработка inline-запроса с ссылкой: ${url}`);
+        logger.info(`🚀 Обработка inline-запроса с видео: ${url}`);
 
-        // 2️⃣ Загружаем видео и получаем URL из S3
-        const s3Url = await downloadVideo(url, bot);
+        // Загружаем видео (это может занять время)
+        const videoPath = await downloadVideo(url, bot);
 
-        if (!s3Url) {
+        if (!videoPath) {
           throw new Error("Видео не загружено");
         }
 
-        // 3️⃣ После загрузки отправляем финальный ответ (если запрос еще активен)
-        return ctx.answerInlineQuery(
+        await ctx.answerInlineQuery(
           [
             {
               type: "video",
               id: String(Date.now()),
-              video_url: s3Url,
+              video_url: videoPath,
               mime_type: "video/mp4",
               title: "Скачанное видео",
               description: "Видео загружено через бот",
@@ -44,24 +41,28 @@ export const handleInlineQuery = (bot) => {
       } catch (error) {
         logger.error("❌ Ошибка при загрузке видео:", error);
 
-        return ctx.answerInlineQuery(
-          [
-            {
-              type: "article",
-              id: "error",
-              title: "Ошибка",
-              input_message_content: {
-                message_text: "🚨 Не удалось загрузить видео. Попробуйте позже.",
-              },
-              description: "Ошибка при скачивании видео",
-            },
-          ],
-          { cache_time: 1 }
-        );
+        // Ловим ошибку, если inline-запрос устарел и отправляем видео в ЛС
+        if (
+          error.response?.error_code === 400 &&
+          error.response?.description.includes("query is too old")
+        ) {
+          const videoPath = await downloadVideo(url, bot);
+
+          await ctx.telegram.sendMessage(
+            ctx.inlineQuery.from.id,
+            `📩 Видео загрузилось, но Telegram слишком долго ждал. Видео отправлено в этот чат.`
+          );
+
+          await ctx.telegram.sendVideo(ctx.inlineQuery.from.id, videoPath, {
+            caption: "🎬 Ваше видео!",
+          });
+        }
       }
+
+      return;
     }
 
-    // Если это НЕ ссылка, отправляем запрос в GPT
+    // 🧠 GPT обработка
     try {
       logger.info(`🧠 Обработка inline-запроса через GPT: ${query}`);
 
