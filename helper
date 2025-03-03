@@ -1,0 +1,5 @@
+process\.env\.(\w+)
+getEnvVar("$1")
+
+logger\.(\w+)\(\s*["'`](.+?)["'`],\s*(.+?)\)
+logger.$1(`$2 ${JSON.stringify($3)}`)
