@@ -131,11 +131,19 @@ export const downloadVideo = async (url, bot, ctx = null) => {
 
     const expandedUrl = await expandShortUrl(url);
     const cleanedUrl = cleanUrl(expandedUrl);
-
+    let messageId;
     let videoPath;
     if (cleanedUrl.includes("tiktok.com") || cleanedUrl.includes("vt.tiktok.com")) {
+      if (ctx) {
+        const loadingMessage = await ctx.reply("⏳ Загружаем видео TikTok...");
+        messageId = loadingMessage.message_id;
+      }
       videoPath = await downloadTikTokVideo(cleanedUrl);
     } else if (cleanedUrl.includes("instagram.com")) {
+      if (ctx) {
+        const loadingMessage = await ctx.reply("⏳ Загружаем видео Instagram...");
+        messageId = loadingMessage.message_id;
+      }
       videoPath = await downloadInstagramVideo(cleanedUrl);
     } else {
       if (ctx) {
@@ -145,6 +153,12 @@ export const downloadVideo = async (url, bot, ctx = null) => {
     }
 
     logger.info(`Ссылка: ${videoPath}`);
+
+    if (ctx) {
+      messageId && (await ctx.telegram.deleteMessage(ctx.chat.id, messageId));
+      return await ctx.replyWithVideo(videoPath);
+    }
+
     return videoPath;
   } catch (error) {
     logger.error("❌ Ошибка загрузки видео:", error);
