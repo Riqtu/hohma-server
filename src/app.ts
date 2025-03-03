@@ -13,6 +13,7 @@ app.get("/", (req, res) => {
   res.send("Server is running");
 });
 app.use("/api", routes);
+
 app.use("/videos", express.static(path.resolve("public/videos")));
 
 export default app;
