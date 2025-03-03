@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "nodemon --watch src --ext ts,js,json --exec tsx -r dotenv/config src/server.ts",
     "build": "tsc",
-    "start": "npm run build && pm2 start dist/server.js --no-daemon -r dotenv/config",
+    "start": "npm run build && pm2 start --no-daemon --node-args=\"-r dotenv/config\" dist/server.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "swagger": "node scripts/swagger-autogen.js"
