@@ -4,9 +4,12 @@ import bodyParser from "body-parser";
 import { RegisterRoutes } from "./routes/routes.js";
 import swaggerUi from "swagger-ui-express";
 import path from "path";
-const { default: swaggerDocument } = await import("../tmp/swagger.json", {
-  assert: { type: "json" },
-});
+const { default: swaggerDocument } = await import(
+  new URL("../tmp/swagger.json", import.meta.url).href,
+  {
+    assert: { type: "json" },
+  }
+);
 
 const app = express();
 const apiRouter = express.Router();
