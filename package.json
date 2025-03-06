@@ -5,7 +5,7 @@
   "main": "src/server.ts",
   "type": "module",
   "scripts": {
-    "tsoa:watch": "nodemon --watch src/routes/api --ext ts,js --exec \"npm run tsoa\"",
+    "tsoa:watch": "nodemon --watch src/routes/api --ext ts,js --exec \"npm run tsoa && npm run generate:js-extension\"",
     "server:watch": "nodemon --watch src --ext ts,js --exec \"tsx -r dotenv/config src/server.ts\"",
     "dev": "run-p tsoa:watch server:watch",
     "build": "tsc",
@@ -14,7 +14,8 @@
     "tsoa": "tsoa spec && tsoa routes",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "swagger": "node scripts/swagger-autogen.js"
+    "swagger": "node scripts/swagger-autogen.js",
+    "generate:js-extension": "node scripts/addJsExtension.js src/routes/routes.ts"
   },
   "imports": {
     "#config/*": "./src/config/*",
