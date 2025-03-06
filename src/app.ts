@@ -3,9 +3,8 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import { RegisterRoutes } from "./routes/routes.js";
 import swaggerUi from "swagger-ui-express";
-import swaggerDocument from "../tmp/swagger.json" assert { type: "json" };
-
 import path from "path";
+const swaggerDocument = await import("../tmp/swagger.json", { assert: { type: "json" } });
 
 const app = express();
 const apiRouter = express.Router();
