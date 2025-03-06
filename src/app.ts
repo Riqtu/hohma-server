@@ -5,8 +5,13 @@ import { RegisterRoutes } from "./routes/routes.js";
 import swaggerUi from "swagger-ui-express";
 import path from "path";
 import { promises as fs } from "fs";
+import { fileURLToPath } from "url";
 
-const swaggerPath = path.resolve("./tmp/swagger.json");
+// Получаем абсолютный путь к файлу swagger.json
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const swaggerPath = path.join(__dirname, "../tmp/swagger.json");
+
 const swaggerContent = await fs.readFile(swaggerPath, "utf-8");
 const swaggerDocument = JSON.parse(swaggerContent);
 
