@@ -1,10 +1,10 @@
 import logger from "./../../../config/logger.js";
 import UserModel from "./../../../models/userModel.js";
-import Movie, { IMovie } from "../../../models/Movie.js";
+import Movie, { MovieDTO } from "../../../models/Movie.js";
 import axios from "axios";
 
 // Создание фильма
-export const createMovie = async (movieData: any): Promise<IMovie> => {
+export const createMovie = async (movieData: any): Promise<MovieDTO> => {
   const user = await UserModel.findOne({ telegramId: movieData.telegramId });
   if (!user) {
     throw new Error("Пользователь не найден");
@@ -32,7 +32,7 @@ export const createMovie = async (movieData: any): Promise<IMovie> => {
 };
 
 // Получить все фильмы
-export const getMovies = async (all: boolean = false): Promise<IMovie[]> => {
+export const getMovies = async (all: boolean = false): Promise<MovieDTO[]> => {
   return await Movie.find(all ? {} : { isDeleted: false }).populate(
     "author",
     "username firstName lastName photoUrl"
@@ -40,17 +40,17 @@ export const getMovies = async (all: boolean = false): Promise<IMovie[]> => {
 };
 
 // Получить фильм по ID
-export const getMovieById = async (id: string): Promise<IMovie | null> => {
+export const getMovieById = async (id: string): Promise<MovieDTO | null> => {
   return await Movie.findById(id).populate("author", "username firstName lastName photoUrl");
 };
 
 // Обновление фильма
-export const updateMovie = async (id: string, movieData: any): Promise<IMovie | null> => {
+export const updateMovie = async (id: string, movieData: any): Promise<MovieDTO | null> => {
   return await Movie.findByIdAndUpdate(id, movieData, { new: true });
 };
 
 // Мягкое удаление фильма
-export const softDeleteMovie = async (id: string): Promise<IMovie | null> => {
+export const softDeleteMovie = async (id: string): Promise<MovieDTO | null> => {
   const movie = await Movie.findById(id);
   if (!movie) {
     return null;
@@ -74,7 +74,7 @@ export const softDeleteMovie = async (id: string): Promise<IMovie | null> => {
 };
 
 // Полное удаление фильма
-export const deleteMoviePermanently = async (id: string): Promise<IMovie | null> => {
+export const deleteMoviePermanently = async (id: string): Promise<MovieDTO | null> => {
   const movie = await Movie.findById(id);
   if (!movie) {
     return null;

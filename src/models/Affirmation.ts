@@ -1,9 +1,11 @@
 import mongoose, { Document } from "mongoose";
 
-export interface AffirmationDocument extends Document {
+export interface AffirmationDTO {
   text: string;
   createdAt: Date;
 }
+
+export interface AffirmationDocument extends AffirmationDTO, Document {}
 
 const affirmationSchema = new mongoose.Schema<AffirmationDocument>(
   {

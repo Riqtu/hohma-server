@@ -1,22 +1,43 @@
-import { Request, Response } from "express";
+import { Controller, Route, Tags, Post, Body, Get } from "tsoa";
 import { addFinalResults, getAllFinalResults } from "./finalResults.service.js";
 
-// Добавить новые результаты
-export const addFinalResultsHandler = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const newAffirmation = await addFinalResults(req.body);
-    res.status(201).json(newAffirmation);
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
-  }
-};
+// Определите интерфейс запроса, если он нужен для валидации входящих данных
+export interface FinalResultsRequest {
+  firstPlace: string;
+  secondPlace?: string;
+  thirdPlace?: string;
+}
 
-// Получить все результаты
-export const getAllFinalResultsHandler = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const finalResults = await getAllFinalResults();
-    res.json(finalResults);
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
+@Route("finalResults")
+@Tags("FinalResults")
+export class FinalResultsController extends Controller {
+  /**
+   * Добавить новые результаты
+   * @param body Объект с данными для добавления результатов
+   */
+  @Post()
+  public async addFinalResults(@Body() body: FinalResultsRequest): Promise<any> {
+    try {
+      const newResults = await addFinalResults(body);
+      this.setStatus(201);
+      return newResults;
+    } catch (error) {
+      this.setStatus(500);
+      throw error;
+    }
   }
-};
+
+  /**
+   * Получить все результаты
+   */
+  @Get()
+  public async getAllFinalResults(): Promise<any> {
+    try {
+      const results = await getAllFinalResults();
+      return results;
+    } catch (error) {
+      this.setStatus(500);
+      throw error;
+    }
+  }
+}

@@ -5,10 +5,13 @@
   "main": "src/server.ts",
   "type": "module",
   "scripts": {
-    "dev": "nodemon --watch src --ext ts,js,json --exec tsx -r dotenv/config src/server.ts",
+    "tsoa:watch": "nodemon --watch src/routes/api --ext ts,js --exec \"npm run tsoa\"",
+    "server:watch": "nodemon --watch src --ext ts,js --exec \"tsx -r dotenv/config src/server.ts\"",
+    "dev": "run-p tsoa:watch server:watch",
     "build": "tsc",
     "start": "pm2 start --no-daemon --node-args=\"-r dotenv/config\" dist/server.js",
     "start:ts": "tsx -r dotenv/config src/server.ts",
+    "tsoa": "tsoa spec && tsoa routes",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "swagger": "node scripts/swagger-autogen.js"
@@ -44,6 +47,7 @@
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "telegraf": "^4.16.3",
+    "tsoa": "^6.6.0",
     "uuid": "^10.0.0",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0",
@@ -61,8 +65,10 @@
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-prettier": "^5.2.3",
     "nodemon": "^3.1.9",
+    "npm-run-all": "^4.1.5",
     "prettier": "^3.4.2",
     "swagger-autogen": "^2.23.7",
+    "ts-json-schema-generator": "^2.3.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.19.3",
     "typescript": "^5.7.3"

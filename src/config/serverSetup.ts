@@ -1,6 +1,5 @@
 import connectDB from "./db.js";
 import { Express } from "express";
-import setupSwagger from "./swagger.js";
 import startScheduler from "../services/scheduler.js";
 import initializeBot from "../bot/bot.js";
 import logger from "./logger.js";
@@ -28,7 +27,6 @@ const startBot = async () => {
 
 export const initializeServer = (app: Express) => {
   connectDB(getEnvVar("MONGO_URI"));
-  setupSwagger(app);
   startScheduler();
 
   startBot(); // Запускаем бота

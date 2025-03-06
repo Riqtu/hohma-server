@@ -1,84 +1,118 @@
-import { Request, Response } from "express";
-import { validateTelegramAuth, authenticateUser } from "./auth.service.js";
-import { validateAuthRequest } from "./auth.validation.js";
+import { Controller, Route, Tags, Post, Get, Body, Query } from "tsoa";
 import crypto from "crypto";
-/**
- * 📌 1. Аутентификация через Telegram Web App (TWA)
- */
-export const authenticateTelegramUser = async (req: Request, res: Response): Promise<void> => {
-  const { initData } = req.body;
-
-  if (!validateAuthRequest(req, res)) {
-    return;
-  }
-
-  if (!validateTelegramAuth(initData)) {
-    res.status(403).json({ error: "Неверные данные Telegram" });
-    return;
-  }
-
-  const params = new URLSearchParams(initData);
-  const userString = params.get("user");
-
-  if (!userString) {
-    res.status(400).json({ error: "user обязателен" });
-    return;
-  }
-
-  let userData;
-  try {
-    userData = JSON.parse(userString);
-  } catch (error) {
-    res.status(400).json({ error: (error as Error).message });
-    return;
-  }
-
-  try {
-    const { user, token } = await authenticateUser(userData);
-    res.json({ user, token });
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
-  }
-};
+import { validateTelegramAuth, authenticateUser } from "./auth.service.js";
 
 /**
- * 📌 2. Аутентификация через браузер (GET)
+ * Интерфейс запроса для аутентификации через Telegram Web App
  */
-export const authenticateBrowserUser = async (req: Request, res: Response): Promise<void> => {
-  const { hash, ...data } = req.query;
+export interface TelegramAuthRequest {
+  initData: string;
+}
 
-  if (!validateAuthRequest(req, res)) {
-    return;
+/**
+ * Контроллер для аутентификации
+ */
+@Route("auth")
+@Tags("Auth")
+export class AuthController extends Controller {
+  /**
+   * Аутентификация через Telegram Web App (TWA)
+   * @param requestBody Объект с initData
+   * @returns Объект с данными пользователя и токеном
+   */
+  @Post("telegram")
+  public async authenticateTelegramUser(
+    @Body() requestBody: TelegramAuthRequest
+  ): Promise<{ user: any; token: string }> {
+    const { initData } = requestBody;
+
+    if (!validateTelegramAuth(initData)) {
+      this.setStatus(403);
+      throw new Error("Неверные данные Telegram");
+    }
+
+    const params = new URLSearchParams(initData);
+    const userString = params.get("user");
+    if (!userString) {
+      this.setStatus(400);
+      throw new Error("user обязателен");
+    }
+
+    let userData;
+    try {
+      userData = JSON.parse(userString);
+    } catch (error: any) {
+      this.setStatus(400);
+      throw new Error(error.message);
+    }
+
+    try {
+      const { user, token } = await authenticateUser(userData);
+      return { user, token };
+    } catch (error: any) {
+      this.setStatus(500);
+      throw new Error(error.message);
+    }
   }
 
-  const secret = crypto
-    .createHash("sha256")
-    .update(process.env.BOT_TOKEN as string)
-    .digest();
-  const checkString = Object.keys(data)
-    .sort()
-    .map((key) => `${key}=${data[key]}`)
-    .join("\n");
+  /**
+   * Аутентификация через браузер (GET)
+   * @param hash Хэш запроса
+   * @param id Telegram ID пользователя
+   * @param first_name Имя
+   * @param last_name Фамилия
+   * @param username Имя пользователя
+   * @param photo_url URL фотографии
+   */
+  @Get("telegram")
+  public async authenticateBrowserUser(
+    @Query() hash: string,
+    @Query() id: string,
+    @Query() first_name: string,
+    @Query() last_name: string,
+    @Query() username: string,
+    @Query() photo_url: string,
+    @Query() auth_date: string
+  ): Promise<void> {
+    const botToken = process.env.BOT_TOKEN as string;
+    // Вычисляем секрет как SHA256 от BOT_TOKEN
+    const secret = crypto.createHash("sha256").update(botToken).digest();
 
-  const hmac = crypto.createHmac("sha256", secret).update(checkString).digest("hex");
+    // Включаем auth_date в объект данных
+    const data = { id, first_name, last_name, username, photo_url, auth_date };
 
-  if (hmac !== hash) {
-    res.status(401).json({ error: "Unauthorized" });
-    return;
+    const checkString = (Object.keys(data) as Array<keyof typeof data>)
+      .sort()
+      .map((key) => `${key}=${data[key]}`)
+      .join("\n");
+
+    const hmac = crypto.createHmac("sha256", secret).update(checkString).digest("hex");
+
+    if (hmac !== hash) {
+      this.setStatus(401);
+      throw new Error("Unauthorized");
+    }
+
+    try {
+      const { user, token } = await authenticateUser({
+        id,
+        first_name,
+        last_name,
+        username,
+        photo_url,
+      });
+      // Вместо редиректа возвращаем заголовок Location с кодом 302
+      this.setStatus(302);
+      this.setHeader(
+        "Location",
+        `${process.env.CLIENT_URL}/auth-success?token=${token}&user=${encodeURIComponent(
+          JSON.stringify(user)
+        )}`
+      );
+      return;
+    } catch (error: any) {
+      this.setStatus(500);
+      throw new Error(error.message);
+    }
   }
-
-  try {
-    const { user, token } = await authenticateUser({
-      id: data.id as string, // Telegram ID
-      first_name: data.first_name as string,
-      last_name: data.last_name as string,
-      username: data.username as string,
-      photo_url: data.photo_url as string,
-    });
-
-    const userInfo = encodeURIComponent(JSON.stringify(user));
-    res.redirect(`${process.env.CLIENT_URL}/auth-success?token=${token}&user=${userInfo}`);
-  } catch (error) {
-    res.status(500).json({ error: (error as Error).message });
-  }
-};
+}

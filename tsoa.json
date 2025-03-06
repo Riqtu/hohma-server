@@ -1,0 +1,24 @@
+{
+  "entryFile": "src/server.ts",
+  "noImplicitAdditionalProperties": "throw",
+  "controllerPathGlobs": ["src/routes/api/*/*.controller.ts"],
+  "spec": {
+    "outputDirectory": "tmp",
+    "specVersion": 3,
+    "spec": {
+      "servers": [
+        {
+          "url": "https://riqtu.ru/api",
+          "description": "Local development"
+        },
+        {
+          "url": "https://hohma-server.ru/api",
+          "description": "Prod development"
+        }
+      ]
+    }
+  },
+  "routes": {
+    "routesDir": "src/routes"
+  }
+}

@@ -1,6 +1,9 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-export interface IUser extends Document {
+/**
+ * @tsoaModel
+ */
+export interface UserDTO {
   telegramId: string;
   firstName?: string;
   lastName?: string;
@@ -11,11 +14,13 @@ export interface IUser extends Document {
   createdAt: Date;
 }
 
-const UserSchema: Schema<IUser> = new mongoose.Schema(
+export interface UserDocument extends UserDTO, Document {}
+
+const UserSchema: Schema<UserDocument> = new mongoose.Schema(
   {
     telegramId: {
       type: String,
-      unique: true, // Уникальный Telegram ID
+      unique: true,
       required: true,
       index: true,
     },
@@ -28,9 +33,9 @@ const UserSchema: Schema<IUser> = new mongoose.Schema(
     createdAt: { type: Date, default: Date.now },
   },
   {
-    timestamps: true, // Добавляет поля createdAt и updatedAt
+    timestamps: true,
   }
 );
 
-const UserModel = mongoose.model<IUser>("User", UserSchema);
+const UserModel = mongoose.model<UserDocument>("User", UserSchema);
 export default UserModel;

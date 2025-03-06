@@ -1,15 +1,17 @@
 import mongoose, { Document } from "mongoose";
-import { IMovie } from "./Movie.js"; // Подключите интерфейс Movie
+import { MovieDTO } from "./Movie.js"; // Подключите интерфейс Movie
 
 // Интерфейс для данных результатов
-export interface IFinalResults extends Document {
-  firstPlace: IMovie; // Теперь это объект типа IMovie
-  secondPlace?: IMovie; // Для второго и третьего места можно сделать необязательными
-  thirdPlace?: IMovie;
+export interface FinalResultsDTO {
+  firstPlace: MovieDTO; // Теперь это объект типа MovieDTO
+  secondPlace?: MovieDTO; // Для второго и третьего места можно сделать необязательными
+  thirdPlace?: MovieDTO;
   date: Date;
 }
 
-const FinalResultsSchema = new mongoose.Schema<IFinalResults>({
+export interface FinalResultsDocument extends FinalResultsDTO, Document {}
+
+const FinalResultsSchema = new mongoose.Schema<FinalResultsDocument>({
   firstPlace: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Movie",
@@ -20,4 +22,4 @@ const FinalResultsSchema = new mongoose.Schema<IFinalResults>({
   date: { type: Date, default: Date.now },
 });
 
-export default mongoose.model<IFinalResults>("FinalResults", FinalResultsSchema);
+export default mongoose.model<FinalResultsDocument>("FinalResults", FinalResultsSchema);

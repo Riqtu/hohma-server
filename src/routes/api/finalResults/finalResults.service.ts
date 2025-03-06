@@ -1,13 +1,13 @@
-import FinalResults, { IFinalResults } from "../../../models/FinalResults.js";
+import FinalResults, { FinalResultsDTO } from "../../../models/FinalResults.js";
 import telegramService from "../../../services/telegramService.js";
-import UserModel from "../../../models/userModel.js"; // Импорт модели пользователя
+import UserModel, { UserDocument } from "../../../models/userModel.js"; // Импорт модели пользователя
 
 // Добавление новых результатов
 export const addFinalResults = async (finalResultsData: {
   firstPlace: string;
   secondPlace?: string;
   thirdPlace?: string;
-}): Promise<IFinalResults> => {
+}): Promise<FinalResultsDTO> => {
   const finalResults = new FinalResults(finalResultsData);
   await finalResults.save();
 
@@ -33,19 +33,22 @@ export const addFinalResults = async (finalResultsData: {
 
   // Обновляем баллы для победителей
   if (populatedFinalResults.firstPlace?.author) {
-    await UserModel.findByIdAndUpdate(populatedFinalResults.firstPlace.author._id, {
+    const author = populatedFinalResults.firstPlace.author as UserDocument;
+    await UserModel.findByIdAndUpdate(author._id, {
       $inc: { coins: 100 },
     });
   }
 
   if (populatedFinalResults.secondPlace?.author) {
-    await UserModel.findByIdAndUpdate(populatedFinalResults.secondPlace.author._id, {
+    const author = populatedFinalResults.secondPlace.author as UserDocument;
+    await UserModel.findByIdAndUpdate(author._id, {
       $inc: { coins: 50 },
     });
   }
 
   if (populatedFinalResults.thirdPlace?.author) {
-    await UserModel.findByIdAndUpdate(populatedFinalResults.thirdPlace.author._id, {
+    const author = populatedFinalResults.thirdPlace.author as UserDocument;
+    await UserModel.findByIdAndUpdate(author._id, {
       $inc: { coins: 20 },
     });
   }
@@ -79,7 +82,7 @@ ${escapeMarkdownV2("Чуть-чуть не хватило? Не расстраи
 };
 
 // Получение всех результатов
-export const getAllFinalResults = async (): Promise<IFinalResults[]> => {
+export const getAllFinalResults = async (): Promise<FinalResultsDTO[]> => {
   return await FinalResults.find()
     .populate("firstPlace") // Заполняем firstPlace
     .populate("secondPlace") // Заполняем secondPlace
