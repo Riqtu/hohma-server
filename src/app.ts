@@ -4,12 +4,11 @@ import bodyParser from "body-parser";
 import { RegisterRoutes } from "./routes/routes.js";
 import swaggerUi from "swagger-ui-express";
 import path from "path";
-const { default: swaggerDocument } = await import(
-  new URL("../tmp/swagger.json", import.meta.url).href,
-  {
-    assert: { type: "json" },
-  }
-);
+import { promises as fs } from "fs";
+
+const swaggerPath = path.resolve("./tmp/swagger.json");
+const swaggerContent = await fs.readFile(swaggerPath, "utf-8");
+const swaggerDocument = JSON.parse(swaggerContent);
 
 const app = express();
 const apiRouter = express.Router();
