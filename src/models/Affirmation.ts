@@ -1,5 +1,8 @@
 import mongoose, { Document } from "mongoose";
 
+/**
+ * @tsoaModel
+ */
 export interface AffirmationDTO {
   text: string;
   createdAt: Date;

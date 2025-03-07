@@ -2,11 +2,14 @@ import mongoose, { Document } from "mongoose";
 import { MovieDTO } from "./Movie.js"; // Подключите интерфейс Movie
 
 // Интерфейс для данных результатов
+/**
+ * @tsoaModel
+ */
 export interface FinalResultsDTO {
   firstPlace: MovieDTO; // Теперь это объект типа MovieDTO
   secondPlace?: MovieDTO; // Для второго и третьего места можно сделать необязательными
   thirdPlace?: MovieDTO;
-  date: Date;
+  date?: Date;
 }
 
 export interface FinalResultsDocument extends FinalResultsDTO, Document {}

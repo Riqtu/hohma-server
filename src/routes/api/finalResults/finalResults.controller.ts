@@ -1,5 +1,6 @@
 import { Controller, Route, Tags, Post, Body, Get } from "tsoa";
 import { addFinalResults, getAllFinalResults } from "./finalResults.service.js";
+import { FinalResultsDTO } from "../../../models/FinalResults.js";
 
 // Определите интерфейс запроса, если он нужен для валидации входящих данных
 export interface FinalResultsRequest {
@@ -15,8 +16,8 @@ export class FinalResultsController extends Controller {
    * Добавить новые результаты
    * @param body Объект с данными для добавления результатов
    */
-  @Post()
-  public async addFinalResults(@Body() body: FinalResultsRequest): Promise<any> {
+  @Post("/")
+  public async addFinalResults(@Body() body: FinalResultsRequest): Promise<FinalResultsDTO> {
     try {
       const newResults = await addFinalResults(body);
       this.setStatus(201);
@@ -30,10 +31,10 @@ export class FinalResultsController extends Controller {
   /**
    * Получить все результаты
    */
-  @Get()
-  public async getAllFinalResults(): Promise<any> {
+  @Get("/")
+  public async getAllFinalResults(): Promise<FinalResultsDTO[]> {
     try {
-      const results = await getAllFinalResults();
+      const results: FinalResultsDTO[] = await getAllFinalResults();
       return results;
     } catch (error) {
       this.setStatus(500);

@@ -17,15 +17,6 @@
     "swagger": "node scripts/swagger-autogen.js",
     "generate:js-extension": "node scripts/addJsExtension.js src/routes/routes.ts"
   },
-  "imports": {
-    "#config/*": "./src/config/*",
-    "#bot/*": "./src/bot/*",
-    "#middleware/*": "./src/middleware/*",
-    "#models/*": "./src/models/*",
-    "#routes/*": "./src/routes/*",
-    "#services/*": "./src/services/*",
-    "#swagger/*": "./src/swagger/*"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",

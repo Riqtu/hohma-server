@@ -12,18 +12,7 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "removeComments": true,
-    "baseUrl": "./src",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
-    "paths": {
-      "*": ["./src/*"],
-      "#bot/*": ["src/bot/*"],
-      "#config/*": ["src/config/*"],
-      "#middleware/*": ["src/middleware/*"],
-      "#models/*": ["src/models/*"],
-      "#routes/*": ["src/routes/*"],
-      "#services/*": ["src/services/*"],
-      "#swagger/*": ["src/swagger/*"]
-    }
+    "emitDecoratorMetadata": true
   }
 }

@@ -11,7 +11,7 @@ export interface UserDTO {
   photoUrl?: string;
   coins?: number;
   role?: "user" | "admin" | "moderator";
-  createdAt: Date;
+  createdAt?: Date;
 }
 
 export interface UserDocument extends UserDTO, Document {}

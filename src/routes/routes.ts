@@ -39,7 +39,7 @@ const models: TsoaRoute.Models = {
             "photoUrl": {"dataType":"string"},
             "coins": {"dataType":"double"},
             "role": {"dataType":"union","subSchemas":[{"dataType":"enum","enums":["user"]},{"dataType":"enum","enums":["admin"]},{"dataType":"enum","enums":["moderator"]}]},
-            "createdAt": {"dataType":"datetime","required":true},
+            "createdAt": {"dataType":"datetime"},
         },
         "additionalProperties": true,
     },
@@ -52,6 +52,17 @@ const models: TsoaRoute.Models = {
             "createdAt": {"dataType":"datetime","required":true},
             "isDeleted": {"dataType":"boolean","required":true},
             "deletedAt": {"dataType":"datetime"},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "FinalResultsDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "firstPlace": {"ref":"MovieDTO","required":true},
+            "secondPlace": {"ref":"MovieDTO"},
+            "thirdPlace": {"ref":"MovieDTO"},
+            "date": {"dataType":"datetime"},
         },
         "additionalProperties": true,
     },
@@ -78,6 +89,15 @@ const models: TsoaRoute.Models = {
         "dataType": "refObject",
         "properties": {
             "text": {"dataType":"string","required":true},
+        },
+        "additionalProperties": true,
+    },
+    // WARNING: This file was auto-generated with tsoa. Please do not modify it. Re-run tsoa to re-generate this file: https://github.com/lukeautry/tsoa
+    "AffirmationDTO": {
+        "dataType": "refObject",
+        "properties": {
+            "text": {"dataType":"string","required":true},
+            "createdAt": {"dataType":"datetime","required":true},
         },
         "additionalProperties": true,
     },

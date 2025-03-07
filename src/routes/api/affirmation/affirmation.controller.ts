@@ -5,6 +5,7 @@ import {
   getRandomAffirmation,
   deleteAffirmation,
 } from "./affirmation.service.js";
+import { AffirmationDTO } from "./../../../models/Affirmation.js";
 
 interface CreateAffirmationRequest {
   text: string;
@@ -29,7 +30,7 @@ export class AffirmationController extends Controller {
       return newAffirmation;
     } catch (error) {
       this.setStatus(500);
-      return { error: error instanceof Error ? error.message : "Unknown error" };
+      throw new Error(error instanceof Error ? error.message : "Unknown error");
     }
   }
 
@@ -37,13 +38,13 @@ export class AffirmationController extends Controller {
    * Получить все аффирмации
    */
   @Get()
-  public async getAllAffirmations(): Promise<any> {
+  public async getAllAffirmations(): Promise<AffirmationDTO[]> {
     try {
-      const affirmations = await getAllAffirmations();
+      const affirmations: AffirmationDTO[] = await getAllAffirmations();
       return affirmations;
     } catch (error) {
       this.setStatus(500);
-      return { error: error instanceof Error ? error.message : "Unknown error" };
+      throw new Error(error instanceof Error ? error.message : "Unknown error");
     }
   }
 
@@ -61,7 +62,7 @@ export class AffirmationController extends Controller {
       return randomAffirmation;
     } catch (error) {
       this.setStatus(500);
-      return { error: error instanceof Error ? error.message : "Unknown error" };
+      throw new Error(error instanceof Error ? error.message : "Unknown error");
     }
   }
 
@@ -79,7 +80,7 @@ export class AffirmationController extends Controller {
       return { message: "Affirmation deleted", deletedAffirmation };
     } catch (error) {
       this.setStatus(500);
-      return { error: error instanceof Error ? error.message : "Unknown error" };
+      throw new Error(error instanceof Error ? error.message : "Unknown error");
     }
   }
 }
